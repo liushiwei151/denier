@@ -22,18 +22,18 @@
 		background: url(../../static/rulebg.png) no-repeat;
 		background-size: 100% 100%;
 		width: 750px;
-		height: 1206px;
-		padding: 224px 77px 0;
+		height: 1334px;
+		padding: 250px 77px 0;
 		box-sizing: border-box;
 		font-size: 26px;
 		text-align: left;
 		font-weight: 600;
 		color: black;
 		.firstp{
-			margin-bottom:63px;
+			margin-bottom:90px;
 		}
 		.twop{
-			margin-bottom:63px;
+			margin-bottom:115px;
 		}
 	}
 </style>

@@ -11,7 +11,7 @@ export default {
 </script>
 
 <style>
-  body,html,p{
+  body,html,p,ul{
     margin:0;
     padding:0;
   }
