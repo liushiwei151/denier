@@ -12,7 +12,7 @@
 						<span>19161817,18452327</span>
 					</p>
 				</div>
-				<div class="topbox-button"><button>查看完整中奖名单</button></div>
+				<div class="topbox-button"><button @click="goto('SearchAward')">查看完整中奖名单</button></div>
 			</div>
 			<div class="bottombox"></div>
 			<ul class="bottomtable">
@@ -55,6 +55,11 @@ export default {
 				num: 1230600
 			}
 		};
+	},
+	methods: {
+		goto(e) {
+			this.$router.push(e);
+		}
 	}
 };
 </script>
@@ -130,8 +135,8 @@ li {
 		height: 70px;
 		margin: 0 auto;
 	}
-	.bottomtable>li{
-			border-bottom: solid 3px black;
+	.bottomtable > li {
+		border-bottom: solid 3px black;
 	}
 	.bottomtable {
 		width: 674px;
@@ -140,40 +145,40 @@ li {
 		box-sizing: border-box;
 		border-radius: 15px;
 		font-size: 22.61px;
-		.cuszj{
+		.cuszj {
 			height: 390px;
 			overflow: scroll;
 		}
-		li{
+		li {
 			display: flex;
 			justify-content: space-between;
-			div{
+			div {
 				display: flex;
 				justify-content: center;
 				align-items: center;
 				flex: 1;
-				padding:5px;
+				padding: 5px;
 				border-right: solid 3px black;
-				border-bottom:solid 3px black;
+				border-bottom: solid 3px black;
 				overflow: hidden;
-				white-space:nowrap;
+				white-space: nowrap;
 				font-weight: 600;
 			}
-			div:first-of-type{
+			div:first-of-type {
 				flex: none;
 				width: 200px;
 			}
-			div:nth-of-type(2){
+			div:nth-of-type(2) {
 				flex: 1.2;
 			}
-			div:last-of-type{
+			div:last-of-type {
 				border-right: none;
 			}
 		}
-		
-		li:last-of-type{
-			div{
-				border-bottom:none;
+
+		li:last-of-type {
+			div {
+				border-bottom: none;
 			}
 		}
 	}
