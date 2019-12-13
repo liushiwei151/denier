@@ -2,35 +2,52 @@
 	<div class="box">
 		<div class="SearchAward">
 			<div class="SearchAward-input">
-				<input type="tel" maxlength="8" placeholder="输入楼主编号" v-model="cusnum"/>
-				<div class="SearchAward-img" @click="souch">
-					<img src="../../static/souch.png" alt="">
-				</div>
+				<input type="tel" maxlength="7" placeholder="输入楼主编号" v-model="cusnum" />
+				<div class="SearchAward-img" @click="souch"><img src="../../static/souch.png" alt="" /></div>
 			</div>
-			<div class="SearchAward-text">恭喜以下100位楼主，喜提黄鹤宝盒！</div>
+			<div class="SearchAward-text">恭喜以下{{allnum.rowCount}}位楼主，喜提黄鹤宝盒！</div>
 			<div class="SearchAward-li">
-				<ul v-for="(item,index) in 20" :key="index">
-					<li >12345678</li>
-					<li >12345678</li>
-					<li >12345678</li>
-				</ul>
+				<!-- allnum.dataList -->
+				<div v-for="(item, index) in 42" :key="index"  :class="{ active: parseInt(index/3) % 2 === 0 }">{{item.memberId}}1234567</div>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+	import api from '@/getapi'
 export default {
 	name: 'SearchAward',
 	data(){
 		return{
-			cusnum:''
+			cusnum:'',
+			allnum:'',
+			member:''
 		}
 	},
+	mounted() {
+		this.member=this.$route.params.memberId;
+		this.getwinners(1,1)
+	},
 	methods:{
+		getwinners(e,m,f){
+			let that =this;
+			let data={
+				 pageNum: e,//第几页,
+				  pageSize:m,//页大小,
+				   memberId:f||""
+			}
+			console.log(data)
+			api.winners(data).then((res)=>{
+				console.log(res.data.data.winners)
+				if(res.data.code==200){
+					that.allnum=res.data.data.winners
+				}
+			})
+		},
 		souch(){
-			if(this.cusnum.length==8){
-				alert(this.cusnum)
+			if(this.cusnum.length==7){
+				this.getwinners(1,100,this.cusnum)
 			}
 		}
 	}
@@ -43,7 +60,7 @@ export default {
 	background-size: 100% 100%;
 	width: 750px;
 	height: 1334px;
-	padding-top:350px;
+	padding-top: 350px;
 	box-sizing: border-box;
 	.SearchAward-input {
 		border-radius: 30px;
@@ -55,13 +72,13 @@ export default {
 		display: flex;
 		justify-content: space-between;
 		margin: 0 auto;
-		.SearchAward-img{
+		.SearchAward-img {
 			background-color: #f69655;
 			width: 138px;
 			display: flex;
 			justify-content: center;
 			align-items: center;
-			img{
+			img {
 				width: 48px;
 				height: 48px;
 			}
@@ -75,52 +92,47 @@ export default {
 		}
 		input::-webkit-input-placeholder {
 			/* Chrome/Opera/Safari */
-			color: #D6D6D6;
+			color: #d6d6d6;
 		}
 		input::-moz-placeholder {
 			/* Firefox 19+ */
-			color: #D6D6D6;
+			color: #d6d6d6;
 		}
 		input:-ms-input-placeholder {
 			/* IE 10+ */
-			color: #D6D6D6;
+			color: #d6d6d6;
 		}
 		input:-moz-placeholder {
 			/* Firefox 18- */
-			color: #D6D6D6;
+			color: #d6d6d6;
 		}
 	}
-	.SearchAward-text{
+	.SearchAward-text {
 		font-size: 36px;
-		color:#AD332D;
+		color: #ad332d;
 		font-weight: 600;
 		margin: 30px 0;
 	}
-	.SearchAward-li{
-		padding:0 45px;
+	.SearchAward-li {
+		padding: 0 45px;
 		box-sizing: border-box;
 		font-size: 30px;
 		font-weight: 600;
-		color:black;
-		height: 750px;
+		color: black;
+		max-height: 750px;
 		overflow: scroll;
-		ul{
-			display: flex;
-			justify-content: space-between;
-			width: 660px;
-			margin-bottom: 10px;
-			li{
-				list-style-type: none;
-				padding:10px 30px;
-				text-align: left;
-			}
+		display: flex;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		div {
+				padding: 10px 30px;
+				text-align: center;
+				height: 40px;
+				width: 150px;
 		}
-		ul:nth-of-type(odd){
-			li{
-				background-color:#F0C072;
-			}
+		.active{
+			background-color: #f0c072;
 		}
 	}
 }
-
 </style>

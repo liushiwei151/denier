@@ -16,20 +16,21 @@ axios.interceptors.request.use((config) => {
     return Promise.reject(error);
 });
 
-
+//用户是否关注
 const subscribe = () => {
   return axios.get('/yq/subscribe')
 }
+//财神签客户数据
 const fortuneSign =()=>{
 	return axios.get('/yq/wealth/fortuneSign')
 }
+//完整名单排名
 const winners =(data)=>{
 	return axios.get('/yq/wealth/winners',{
-    params: {
-      PARAM: data
-    }
+    params: data
   })
 } 
+//中奖名单
 const fortuneList =()=>{
 	return axios.get('/yq/fortune/fortuneList')
 }

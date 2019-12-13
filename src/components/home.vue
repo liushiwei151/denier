@@ -24,7 +24,7 @@ export default {
 	data() {
 		return {
 			num: 100,
-			isshow:false
+			isshow:true
 		};
 	},
 	mounted() {

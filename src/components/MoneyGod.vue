@@ -3,14 +3,14 @@
 		<div class="MoneyGod">
 			<div class="topbox">
 				<div class="topbox-cus">
-					<p>昵称：小北999999999999999</p>
-					<p>用户编号：1230600</p>
+					<p>昵称：{{custorm.nickName}}</p>
+					<p>用户编号：{{custorm.memberId}}</p>
 				</div>
 				<div class="topbox-fuq">
-					<p>
-						活动中奖福签：
-						<span>19161817,18452327</span>
-					</p>
+					<ul>
+						<li>活动中奖福签：</li>
+						<li v-for="(item,index) in custorm.winnerNrs" :key="index">{{item}}<span v-show="index!=custorm.winnerNrs.length-1">,</span></span></li>
+					</ul>
 				</div>
 				<div class="topbox-button"><button @click="goto('SearchAward')">查看完整中奖名单</button></div>
 			</div>
@@ -32,12 +32,12 @@
 					</div>
 				</li>
 				<div class="cuszj">
-					<li v-for="(item, index) in 19" :key="index">
-						<div>2019-11-23 00:59</div>
-						<div>19161817</div>
-						<div>扫码</div>
-						<div></div>
-						<div>1</div>
+					<li v-for="(item, index) in custorm.yqBlessingRecords" :key="index">
+						<div>{{item.insertTime}}</div>
+						<div>{{item.blessingRecordId}}</div>
+						<div>{{item.source}}</div>
+						<div><span v-show="item.pack==2">{{item.score}}</span></div>
+						<div><span v-show="item.pack==1">{{item.score}}</span></div>
 					</li>
 				</div>
 			</ul>
@@ -46,19 +46,25 @@
 </template>
 
 <script>
+	import api from '@/getapi.js'
 export default {
 	name: 'MoneyGod',
 	data() {
 		return {
-			custorm: {
-				name: '小北',
-				num: 1230600
-			}
+			custorm:""
 		};
+	},
+	mounted() {
+		let that =this;
+		api.fortuneSign().then((res)=>{
+			if(res.data.code==200){
+				that.custorm=res.data.data
+			}
+		})
 	},
 	methods: {
 		goto(e) {
-			this.$router.push(e);
+			this.$router.push({ name: e, params: { memberId: this.custorm.memberId }})
 		}
 	}
 };
@@ -87,9 +93,10 @@ li {
 		background: url(../../static/topbox.png) no-repeat;
 		background-size: 100% 100%;
 		width: 678px;
-		height: 231px;
 		margin: 0 auto 20px;
 		font-weight: 600;
+		padding-bottom:10px;
+		box-sizing: border-box;
 		.topbox-cus {
 			display: flex;
 			font-size: 30.82px;
@@ -123,9 +130,16 @@ li {
 			padding-left: 37px;
 			box-sizing: border-box;
 			margin: 15px 0;
-			span {
-				color: rgb(169, 31, 39);
+			ul{
+				display: flex;
+				justify-content: flex-start;
+				flex-wrap:wrap				
 			}
+			li {
+				color: rgb(169, 31, 39);
+				margin-right:10px ;
+			}
+			
 		}
 	}
 	.bottombox {
@@ -146,7 +160,7 @@ li {
 		border-radius: 15px;
 		font-size: 22.61px;
 		.cuszj {
-			height: 390px;
+			max-height: 390px;
 			overflow: scroll;
 		}
 		li {
@@ -166,7 +180,7 @@ li {
 			}
 			div:first-of-type {
 				flex: none;
-				width: 200px;
+				width: 220px;
 			}
 			div:nth-of-type(2) {
 				flex: 1.2;
