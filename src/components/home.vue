@@ -5,19 +5,37 @@
 			<div class="money">
 				<div class="MoneyGod" @click="goto('MoneyGod')"><div class="cursor"></div></div>
 				<div class="Fortunes" @click="goto('Fortunes')"></div>
-				<div class="callMoney"></div>
+				<div class="callMoney" ></div>
+			</div>
+		</div>
+		<div class="modal" :class="{show:!isshow}">
+			<div class="qrcbox">
+				<div class="qrcbox-img"><img src="../../static/qrcnei.png" alt=""></div>
+				<div class="modal-button">关闭</div>
 			</div>
 		</div>
 	</div>
 </template>
 
 <script>
+	import api from '@/getapi.js'
 export default {
 	name: 'home',
 	data() {
 		return {
-			num: 100
+			num: 100,
+			isshow:false
 		};
+	},
+	mounted() {
+		let that =this;
+		api.subscribe().then((res)=>{
+			if(res.data.code==200){
+				that.isshow=res.data.data.isSubscribe
+			}else{
+				alert('认证失败')
+			}
+		})
 	},
 	methods: {
 		goto(e) {
@@ -28,9 +46,81 @@ export default {
 </script>
 
 <style scoped lang="less">
-.fn {
-	position: absolute;
-}
+	// 未关注用户
+	.modal{
+		z-index: -100;
+		position: fixed;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		opacity: 0;
+		outline: 0;
+		text-align: center;
+		-ms-transform: scale(1.185);
+		-webkit-transform: scale(1.185);
+		transform: scale(1.185);
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
+		-webkit-perspective: 1096px;
+		perspective: 1096px;
+		background: rgba(0, 0, 0, 0.6);
+		-webkit-transition: all 0.3s ease-in-out 0s;
+		-o-transition: all 0.3s ease-in-out 0s;
+		transition: all 0.3s ease-in-out 0s;
+		pointer-events: none;
+		box-sizing: border-box;
+		z-index: 100;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		.modal-button{
+			background: url(../../static/button.png) no-repeat;
+			background-size:100% 100%;
+			width: 300px;
+			height: 100px;
+			line-height: 100px;
+			font-size: 36px;
+			color:rgb(249,211,149);
+			font-weight: 700;
+			letter-spacing: 10px;
+			text-indent: 10px;
+			white-space: nowrap;
+			}
+		.qrcbox{
+			background: url(../../static/qrc.png) no-repeat;
+			width: 623px;
+			height: 790px;
+			background-size:100% 100% ;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			.qrcbox-img{
+				width: 464px;
+				height: 464px;
+				margin-top:110px ;
+				img{
+					width: 464px;
+					height: 464px;
+				}
+			}
+			
+		}
+	}
+	.show {
+	  -webkit-transition-duration: 0.3s;
+	  -o-transition-duration: 0.3s;
+	  transition-duration: 0.3s;
+	  -ms-transform: scale(1);
+	  -webkit-transform: scale(1);
+	  transform: scale(1);
+	  overflow-x: hidden;
+	  overflow-y: auto;
+	  pointer-events: auto;
+	  opacity: 1;
+	  z-index: 100;
+	}
 @button: {
 	width: 206px;
 	height: 255px;
@@ -76,6 +166,7 @@ export default {
 				bottom: 0;
 				right: 0;
 				position: absolute;
+				animation: fight 1s ease infinite both;
 			}
 		}
 		.Fortunes {
@@ -86,6 +177,18 @@ export default {
 			background: url(../../static/button1.png) no-repeat;
 			@button();
 		}
+	}
+}
+// 手指动画
+@keyframes fight{
+	0%{
+		transform: none;
+		}
+	70%{
+		transform: scale3d(0.8,0.8,0.8);
+	}
+	100%{
+		transform: none;
 	}
 }
 </style>
