@@ -17,8 +17,10 @@ axios.interceptors.request.use((config) => {
 });
 
 //用户是否关注
-const subscribe = () => {
-  return axios.get('/yq/subscribe')
+const subscribe = (data) => {
+  return axios.get('/yq/subscribe',{
+	  params:data
+  })
 }
 //财神签客户数据
 const fortuneSign =()=>{
@@ -34,9 +36,15 @@ const winners =(data)=>{
 const fortuneList =()=>{
 	return axios.get('/yq/fortune/fortuneList')
 }
+const jsSign =(url)=>{
+	return axios.get('/yq/jsSign',{
+		params:url
+	})
+}
 export default {
 	subscribe,
 	fortuneSign,
 	winners,
-	fortuneList
+	fortuneList,
+	jsSign
 }

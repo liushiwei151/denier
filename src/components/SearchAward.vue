@@ -37,9 +37,7 @@ export default {
 				  pageSize:m,//页大小,
 				   memberId:f||""
 			}
-			console.log(data)
 			api.winners(data).then((res)=>{
-				console.log(res.data.data.winners)
 				if(res.data.code==200){
 					that.allnum=res.data.data.winners
 				}
