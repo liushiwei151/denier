@@ -8,7 +8,7 @@
 			<div class="SearchAward-text">恭喜以下{{allnum.rowCount}}位楼主，喜提黄鹤宝盒！</div>
 			<div class="SearchAward-li">
 				<!-- allnum.dataList -->
-				<div v-for="(item, index) in 42" :key="index"  :class="{ active: parseInt(index/3) % 2 === 0 }">{{item.memberId}}1234567</div>
+				<div v-for="(item, index) in allnum.dataList" :key="index"  :class="{ active: parseInt(index/3) % 2 === 0 }">{{item.memberId}}</div>
 			</div>
 		</div>
 	</div>
@@ -25,12 +25,14 @@ export default {
 			member:''
 		}
 	},
+	inject: ['isloadingshow'],
 	mounted() {
 		this.member=this.$route.params.memberId;
-		this.getwinners(1,1)
+		this.getwinners(1,1000)
 	},
 	methods:{
 		getwinners(e,m,f){
+			this.isloadingshow(true);
 			let that =this;
 			let data={
 				 pageNum: e,//第几页,
@@ -39,14 +41,13 @@ export default {
 			}
 			api.winners(data).then((res)=>{
 				if(res.data.code==200){
-					that.allnum=res.data.data.winners
+					that.allnum=res.data.data.winners;
+					this.isloadingshow(false);
 				}
 			})
 		},
 		souch(){
-			if(this.cusnum.length==7){
-				this.getwinners(1,100,this.cusnum)
-			}
+				this.getwinners(1,1000,this.cusnum)
 		}
 	}
 };

@@ -92,12 +92,15 @@ export default {
 			istop:false
 		}
 	},
+	inject: ['isloadingshow'],
 	mounted() {
+		this.isloadingshow(true);
 		let that =this;
 		api.fortuneList().then((res)=>{
 			if(res.data.code==200){
 				that.fortun=res.data.data;
-				that.istop=res.data.data.isTop
+				that.istop=res.data.data.isTop;
+				this.isloadingshow(false);
 			}
 		})
 	},

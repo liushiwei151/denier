@@ -27,7 +27,9 @@ export default {
 			isshow: true
 		};
 	},
+	 inject: ['isloadingshow'],
 	mounted() {
+		this.isloadingshow(true);
 		let that = this;
 		let datas = {
 			url: location.href.split('#')[0]
@@ -54,10 +56,10 @@ export default {
 							latitude: latitude||0,
 							longitude: longitude||0
 						};
-						alert(999)
 						api.subscribe(data).then(res => {
 							if (res.data.code == 200) {
 								that.isshow = res.data.data.isSubscribe;
+								this.isloadingshow(true);
 							} else {
 								alert('认证失败');
 							}
@@ -75,6 +77,7 @@ export default {
 		api.subscribe(data).then(res => {
 			if (res.data.code == 200) {
 				that.isshow = res.data.data.isSubscribe;
+				this.isloadingshow(false);
 			} else {
 				alert('认证失败');
 			}

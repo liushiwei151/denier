@@ -54,10 +54,13 @@ export default {
 			custorm:""
 		};
 	},
+	 inject: ['isloadingshow'],
 	mounted() {
+		this.isloadingshow(true);
 		let that =this;
 		api.fortuneSign().then((res)=>{
 			if(res.data.code==200){
+				this.isloadingshow(false);
 				that.custorm=res.data.data
 			}
 		})
