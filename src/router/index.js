@@ -5,6 +5,7 @@ import rule from '@/components/rule'
 import MoneyGod from '@/components/MoneyGod'
 import Fortunes from '@/components/Fortunes'
 import SearchAward from '@/components/SearchAward'
+import game from '@/components/game'
 
 Vue.use(Router)
 
@@ -33,6 +34,11 @@ export default new Router({
 			path:'/SearchAward',
 			name:'SearchAward',
 			component:SearchAward
+		},
+		{
+			path:'/game',
+			name:'game',
+			component:game
 		}
 	]
 })
