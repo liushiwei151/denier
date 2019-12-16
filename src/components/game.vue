@@ -1,14 +1,17 @@
 <template>
-	<div>
-		gamedemo
-	</div>
+	<div></div>
 </template>
 
 <script>
-	export default{
-		name:'game'
+import api from '@/getapi.js';
+export default {
+	name: 'game',
+	mounted() {
+	
+	},
+	methods: {
+		
 	}
+};
 </script>
-
-<style scoped>
-</style>
+<style scoped></style>

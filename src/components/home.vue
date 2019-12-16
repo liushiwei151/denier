@@ -5,13 +5,13 @@
 			<div class="money">
 				<div class="MoneyGod" @click="goto('MoneyGod')"><div class="cursor"></div></div>
 				<div class="Fortunes" @click="goto('Fortunes')"></div>
-				<div class="callMoney"></div>
+				<div class="callMoney" @click="goto('game')"></div>
 			</div>
 		</div>
 		<div class="modal" :class="{ show: !isshow }">
 			<div class="qrcbox">
 				<div class="qrcbox-img"><img src="../../static/qrcnei.png" alt="" /></div>
-				<div class="modal-button">关闭</div>
+				<div class="modal-button" @click="close">关闭</div>
 			</div>
 		</div>
 	</div>
@@ -86,6 +86,9 @@ export default {
 	methods: {
 		goto(e) {
 			this.$router.push(e);
+		},
+		close(){
+			this.isshow=true
 		}
 	}
 };
