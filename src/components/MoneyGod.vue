@@ -8,7 +8,7 @@
 				</div>
 				<div class="topbox-fuq">
 					<ul>
-						<li>活动中奖福签：</li>
+						<li style="color:black">活动中奖财神签：</li>
 						<li v-for="(item,index) in custorm.winnerNrs" :key="index">{{item}}<span v-show="index!=custorm.winnerNrs.length-1">,</span></span></li>
 					</ul>
 				</div>
@@ -80,9 +80,9 @@ li {
 .box {
 	background-image: url(../../static/bg.png);
 	background-size: 100% 100%;
-	height: 100%;
-	position: fixed;
-	width: 750px;
+	// height: 100%;
+	// position: fixed;
+	// width: 750px;
 	color: black;
 }
 .MoneyGod {
@@ -124,8 +124,9 @@ li {
 				width: 250px;
 				height: 73px;
 				color: rgb(249, 211, 149);
-				font-size: 25px;
+				font-size: 22px;
 				font-weight: 600;
+				white-space: nowrap;
 			}
 		}
 		.topbox-fuq {
@@ -136,6 +137,7 @@ li {
 			ul{
 				display: flex;
 				justify-content: flex-start;
+				align-items: center;
 				flex-wrap:wrap				
 			}
 			li {

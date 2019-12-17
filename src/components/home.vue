@@ -3,9 +3,9 @@
 		<div class="home">
 			<div class="rulebutton" @click="goto('rule')"></div>
 			<div class="money">
-				<div class="MoneyGod" @click="goto('MoneyGod')"><div class="cursor"></div></div>
-				<div class="Fortunes" @click="goto('Fortunes')"></div>
-				<div class="callMoney" @click="goto('game')"></div>
+				<div class="MoneyGod" @click="!isguanzhu?isshow=false:goto('MoneyGod')"><div class="cursor"></div></div>
+				<div class="Fortunes" @click="!isguanzhu?isshow=false:goto('Fortunes')"></div>
+				<div class="callMoney" @click="!isguanzhu?isshow=false:goto('game')"></div>
 			</div>
 		</div>
 		<div class="modal" :class="{ show: !isshow }">
@@ -24,7 +24,9 @@ export default {
 	data() {
 		return {
 			num: 100,
-			isshow: true
+			isshow: true,
+			//是否关注了
+			isguanzhu:''
 		};
 	},
 	 inject: ['isloadingshow'],
@@ -42,12 +44,15 @@ export default {
 					timestamp: res.data.data.timestamp, // 必填，生成签名的时间戳
 					nonceStr: res.data.data.nonceStr, // 必填，生成签名的随机串
 					signature: res.data.data.signature, // 必填，签名
-					jsApiList: ['getLocation'] // 必填，需要使用的JS接口列表
+					jsApiList: ['getLocation','startRecord','stopRecord','playVoice','uploadVoice'] // 必填，需要使用的JS接口列表
 				});
+				console.log("wx获取权限结束")
 				that.wx.ready(function(){
-					wx.getLocation({
+					console.log("开始获取坐标接口")
+					that.wx.getLocation({
 					  type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
 					  success: function (res) {
+						  console.log('获取结束')
 					    var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
 					    var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
 					    var speed = res.speed; // 速度，以米/每秒计
@@ -57,9 +62,11 @@ export default {
 							longitude: longitude||0
 						};
 						api.subscribe(data).then(res => {
+							console.log('调取subscribe接口成功')
 							if (res.data.code == 200) {
 								that.isshow = res.data.data.isSubscribe;
-								this.isloadingshow(true);
+								that.isguanzhu=res.data.data.isSubscribe;
+								that.isloadingshow(false);
 							} else {
 								alert('认证失败');
 							}
@@ -77,6 +84,7 @@ export default {
 		api.subscribe(data).then(res => {
 			if (res.data.code == 200) {
 				that.isshow = res.data.data.isSubscribe;
+				that.isguanzhu=res.data.data.isSubscribe;
 				this.isloadingshow(false);
 			} else {
 				alert('认证失败');
@@ -175,10 +183,10 @@ export default {
 	background-size: 100% 100%;
 };
 .box {
-	position: fixed;
-	width: 100%;
-	height: 100%;
-	background-color: rgb(56, 134, 198);
+	// position: fixed;
+	// width: 100%;
+	// height: 100%;
+	// background-color: rgb(56, 134, 198);
 }
 .home {
 	width: 750px;

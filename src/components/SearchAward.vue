@@ -9,7 +9,7 @@
 
 			<mescroll-vue ref="mescroll"  :up="mescrollUp" @init="mescrollInit">
 				<div class="SearchAward-li">
-					<div v-for="(item, index) in allnum.dataList" :key="index" :class="{ active: parseInt(index / 3) % 2 === 0 }">
+					<div v-for="(item, index) in dataList" :key="index" :class="{ active: parseInt(index / 3) % 2 === 0 }">
 						{{ item.memberId }}
 					</div>
 				</div>
@@ -40,7 +40,8 @@ export default {
 				page: {
 					num: 0, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
 					size: 1 //每页数据条数,默认10
-				}
+				},
+				htmlNodata: '<p class="upwarp-nodata">-- 没有更多 --</p>',
 			},
 			dataList: [] // 列表数据
 		};
@@ -92,17 +93,21 @@ export default {
 					// that.allnum = res.data.data.winners;
 					// this.isloadingshow(false);
 					// 请求的列表数据
-					let arr = res.data.data.winners.dataList;
-					console.log(arr, res.data.data.winners)
+					let ishas =true;
+					let arr = res.data.data.winners;
 					// 如果是第一页需手动置空列表
 					if (e === 1) this.dataList = [];
 					// 把请求到的数据添加到列表
-					this.dataList = this.dataList.concat(arr);
-					// 数据渲染成功后,隐藏下拉刷新的状态
-					this.$nextTick(() => {
-						this.mescroll.endSuccess(arr.length);
-						console.log(this.dataList)
-					});
+					if(arr.pageCount>=e){
+						this.dataList = this.dataList.concat(arr.dataList);
+						// 数据渲染成功后,隐藏下拉刷新的状态
+						this.$nextTick(() => {
+							this.mescroll.endSuccess(arr.dataList.length);
+						});
+					}else{
+						ishas =false;
+						this.mescroll.endSuccess(arr.pageSize,ishas);
+					}
 				}
 			}).catch(err=>{
 				// 联网失败的回调,隐藏下拉刷新和上拉加载的状态;
@@ -145,6 +150,7 @@ export default {
 			display: flex;
 			justify-content: center;
 			align-items: center;
+			height: 100%;
 			img {
 				width: 48px;
 				height: 48px;

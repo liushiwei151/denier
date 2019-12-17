@@ -1,7 +1,7 @@
 import axios from 'axios'
 import qs from 'qs'
 axios.defaults.timeout = 10000; //响应时间
-axios.defaults.baseURL = 'http://192.168.2.117:9100';   //配置接口地址
+ axios.defaults.baseURL = 'http://192.168.2.117:9100';   //配置接口地址
 axios.defaults.withCredentials = true;
 
 //POST传参序列化(添加请求拦截器)
@@ -43,7 +43,15 @@ const jsSign =(url)=>{
 }
 // 测试音频接口
 const voicetest =()=>{
-	return axios.get('/yq/test/voice')
+	return axios.get('/yq/test/getVoice')
+}
+//测试下载音频接口
+const getVoice =(id)=>{
+	return axios.get('/yq/shout/getVoice',{
+		params:{
+			mediaId:id
+		}
+	})
 }
 export default {
 	subscribe,
@@ -51,5 +59,6 @@ export default {
 	winners,
 	fortuneList,
 	jsSign,
-	voicetest
+	voicetest,
+	getVoice
 }

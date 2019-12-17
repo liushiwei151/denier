@@ -234,6 +234,11 @@ li {
 				display: flex;
 				justify-content: space-between;
 				height: 40px;
+				div:nth-of-type(3){
+					display: block;
+					text-overflow:ellipsis; //溢出用省略号显示
+					white-space:nowrap;
+				}
 				div {
 					display: flex;
 					justify-content: center;
