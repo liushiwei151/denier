@@ -10,7 +10,7 @@
 		</div>
 		<div class="modal" :class="{ show: !isshow }">
 			<div class="qrcbox">
-				<div class="qrcbox-img"><img src="../../static/qrcnei.png" alt="" /></div>
+				<div class="qrcbox-img"><img src="../../static/qrcnei.png" /></div>
 				<div class="modal-button" @click="close">关闭</div>
 			</div>
 		</div>
@@ -158,8 +158,8 @@ export default {
 			height: 464px;
 			margin-top: 110px;
 			img {
-				width: 464px;
-				height: 464px;
+				width: 100%;
+				height: 100%;
 			}
 		}
 	}

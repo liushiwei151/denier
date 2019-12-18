@@ -100,6 +100,7 @@ li {
 		font-weight: 600;
 		padding-bottom:10px;
 		box-sizing: border-box;
+		font-size: 32px;
 		.topbox-cus {
 			display: flex;
 			font-size: 30.82px;
@@ -119,14 +120,16 @@ li {
 			justify-content: center;
 			button {
 				border: none;
+				padding:0;
 				background: url(../../static/button.png) no-repeat;
 				background-size: 100% 100%;
 				width: 250px;
 				height: 73px;
 				color: rgb(249, 211, 149);
-				font-size: 22px;
+				font-size: 24px;
 				font-weight: 600;
 				white-space: nowrap;
+				overflow: hidden;
 			}
 		}
 		.topbox-fuq {

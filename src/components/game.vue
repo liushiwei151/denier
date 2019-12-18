@@ -2,11 +2,11 @@
 	<div>
 		<button @click="star">开始录音</button>
 		<button @click="stop">停止录音</button>
-		<div>音频所有数据:{{localId}}</div>
-		<div>音频编号:{{localId.localId}}</div>
+		<!-- <div>音频所有数据:{{localId}}</div>
+		<div>音频编号:{{localId.localId}}</div> -->
 		<button @click="bof">开始播放</button>
 		<button @click="upload">上传语音</button>
-		<div>音频服务端id：{{serverId}}</div>
+	<!-- 	<div>音频服务端id：{{serverId}}</div> -->
 		<div>返回的音频:{{yip}}</div>
 		<audio :src="voice" controls='controls'>99999</audio>
 	</div>
@@ -25,12 +25,6 @@ export default {
 		}
 	},
 	mounted() {
-		api.voicetest().then(res => {
-			this.voice =res.data;
-			var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-			var source = audioCtx.createBufferSource();
-			console.log(res.data);
-		});
 	},
 	methods: {
 		star() {

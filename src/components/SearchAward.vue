@@ -3,9 +3,9 @@
 		<div class="SearchAward">
 			<div class="SearchAward-input">
 				<input type="tel" maxlength="7" placeholder="输入楼主编号" v-model="cusnum" />
-				<div class="SearchAward-img" @click="souch"><img src="../../static/souch.png" alt="" /></div>
+				<div class="SearchAward-img" @click="souch"><div><img src="../../static/souch.png" alt="" /></div></div>
 			</div>
-			<div class="SearchAward-text">恭喜以下{{ allnum.rowCount }}位楼主，喜提黄鹤宝盒！</div>
+			<div class="SearchAward-text">恭喜以下{{ allnum}}位楼主，喜提黄鹤宝盒！</div>
 
 			<mescroll-vue ref="mescroll"  :up="mescrollUp" @init="mescrollInit">
 				<div class="SearchAward-li">
@@ -32,14 +32,9 @@ export default {
 			mescroll: null, // mescroll实例对象
 			mescrollUp: {
 				callback: this.upCallback,
-				toTop: {
-					//回到顶部按钮
-					src: './static/down.png', //图片路径,默认null,支持网络图
-					offset: 0, //列表滚动1000px才显示回到顶部按钮
-				},
 				page: {
 					num: 0, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
-					size: 1 //每页数据条数,默认10
+					size: 36 //每页数据条数,默认10
 				},
 				htmlNodata: '<p class="upwarp-nodata">-- 没有更多 --</p>',
 			},
@@ -65,6 +60,7 @@ export default {
 	inject: ['isloadingshow'],
 	mounted() {
 		this.member = this.$route.params.memberId;
+		console.log(this.member)
 		// this.getwinners(1, 1000);
 	},
 	methods: {
@@ -79,22 +75,21 @@ export default {
 			this.getwinners(page.num,page.size);
 		},
 		//原
-		getwinners(e, m, f) {
+		getwinners(e, m) {
 			// this.isloadingshow(true);
-			console.log(e,m,f)
+			console.log(e,m)
 			let that = this;
 			let data = {
 				pageNum: e, //第几页,
 				pageSize: m, //页大小,
-				memberId: f || ''
+				memberId: that.cusnum||''
 			};
 			api.winners(data).then(res => {
 				if (res.data.code == 200) {
-					// that.allnum = res.data.data.winners;
-					// this.isloadingshow(false);
 					// 请求的列表数据
 					let ishas =true;
 					let arr = res.data.data.winners;
+					that.allnum =arr.rowCount;
 					// 如果是第一页需手动置空列表
 					if (e === 1) this.dataList = [];
 					// 把请求到的数据添加到列表
@@ -115,7 +110,8 @@ export default {
 			});
 		},
 		souch() {
-			this.getwinners(1, 1000, this.cusnum);
+			// this.getwinners(1, 1000, this.cusnum);
+			this.mescroll.resetUpScroll(true);
 		}
 	}
 };
@@ -151,9 +147,13 @@ export default {
 			justify-content: center;
 			align-items: center;
 			height: 100%;
-			img {
+			div{
 				width: 48px;
 				height: 48px;
+				img {
+					width: 100%;
+					height: 100%;
+				}
 			}
 		}
 		input {

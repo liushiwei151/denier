@@ -87,8 +87,8 @@ export default {
 	data(){
 		return{
 			fortun:'',
-			isheight:true,
-			isheight2:true,
+			isheight:false,
+			isheight2:false,
 			istop:false
 		}
 	},
@@ -197,7 +197,7 @@ li {
 		width: 674px;
 		margin: 0 auto 20px;
 		overflow: hidden;
-		max-height: 503px;
+		max-height: 630px;
 		
 		 // transition: transform 2s ease-out;
 		.bottom-title {
@@ -227,7 +227,8 @@ li {
 				}
 			}
 			.cuszj {
-				height: 400px;
+				max-height: 400px;
+				padding-bottom:15px;
 				overflow: scroll;
 			}
 			li {

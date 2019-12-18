@@ -41,10 +41,6 @@ const jsSign =(url)=>{
 		params:url
 	})
 }
-// 测试音频接口
-const voicetest =()=>{
-	return axios.get('/yq/test/getVoice')
-}
 //测试下载音频接口
 const getVoice =(id)=>{
 	return axios.get('/yq/shout/getVoice',{
@@ -59,6 +55,5 @@ export default {
 	winners,
 	fortuneList,
 	jsSign,
-	voicetest,
 	getVoice
 }
