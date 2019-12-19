@@ -5,7 +5,7 @@
 			<div class="money">
 				<div class="MoneyGod" @click="!isguanzhu?isshow=false:goto('MoneyGod')"><div class="cursor"></div></div>
 				<div class="Fortunes" @click="!isguanzhu?isshow=false:goto('Fortunes')"></div>
-				<div class="callMoney" @click="!isguanzhu?isshow=false:goto('game')"></div>
+				<div class="callMoney" @click="goto('game')"></div>
 			</div>
 		</div>
 		<div class="modal" :class="{ show: !isshow }">
@@ -31,7 +31,7 @@ export default {
 	},
 	 inject: ['isloadingshow'],
 	mounted() {
-		this.isloadingshow(true);
+		// this.isloadingshow(true);
 		let that = this;
 		let datas = {
 			url: location.href.split('#')[0]

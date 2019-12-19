@@ -1,14 +1,25 @@
 <template>
 	<div>
-		<button @click="star">开始录音</button>
-		<button @click="stop">停止录音</button>
-		<!-- <div>音频所有数据:{{localId}}</div>
-		<div>音频编号:{{localId.localId}}</div> -->
-		<button @click="bof">开始播放</button>
-		<button @click="upload">上传语音</button>
-	<!-- 	<div>音频服务端id：{{serverId}}</div> -->
-		<div>返回的音频:{{yip}}</div>
-		<audio :src="voice" controls='controls'>99999</audio>
+		<div class="gamebg" :style="{backgroundPositionY: index + 'px'}">
+			<div class="game-content">
+				<div class="game-prop">
+					<div class="game-prop-zu"></div>
+					<div class="game-prop-feng"></div>
+					<div class="game-prop-yun"></div>
+				</div>
+				<div class="game-rule">
+					<div>活动规则</div>
+					<div>财运足迹</div>
+				</div>
+				<div class="bottom-land">
+					<div class="bottom-land-xian">
+						<div class="bottom-land-xian-buttonleft"></div>
+						<div class="bottom-land-xian-buttonright"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="people"  :style="{position:'fixed',bottom:bottomum+'px',left:leftNum+'px'}" ></div>
 	</div>
 </template>
 
@@ -20,16 +31,33 @@ export default {
 		return{
 			localId:'',
 			serverId:'',
+			//返回的音频
 			yip:"",
-			voice:''
+			voice:'',
+			index:0,
+		}
+	},
+	computed:{
+		// 人物的位置
+		bottomum:()=>{
+			return 20+10
+		},
+		leftNum:()=>{
+			return 100+20
 		}
 	},
 	mounted() {
+		setInterval(this.top,1000000)
 	},
 	methods: {
+		top(){
+			this.index=this.index+2;
+		},
+		// 开始录音
 		star() {
 			this.wx.startRecord();
 		},
+		// 停止录音
 		stop() {
 			let that =this;
 			this.wx.stopRecord({
@@ -50,11 +78,7 @@ export default {
 				}
 			});
 		},
-		bof(){
-			this.wx.playVoice({
-			  localId: this.localId.localId // 需要播放的音频的本地ID，由stopRecord接口获得
-			});
-		},
+		// 上传语音
 		upload(){
 			this.wx.uploadVoice({
 			  localId: this.localId.localId, // 需要上传的音频的本地ID，由stopRecord接口获得
@@ -67,4 +91,106 @@ export default {
 	}
 };
 </script>
-<style scoped></style>
+<style scoped lang="less">
+	// 灰色滤镜
+	.gray{
+		filter: grayscale(100%);
+	}
+	.gamebg{
+		background: url(../../static/callbg.jpg) repeat-y;
+		background-size: 100% 100%;
+		width: 750px;
+		height: 1334px;
+	}
+	.game-content{
+		position: fixed;
+		bottom: 0;
+		.game-prop{
+			height: 400px;
+			display: flex;
+			flex-direction: column;
+			justify-content: space-between;
+			margin-bottom:150px;
+			padding-left:20px ;
+			.game-prop-zu{
+				width: 132px;
+				height: 99px;
+				background: url(../../static/game/zuqingt.png) no-repeat;
+				background-size:100% 100% ;
+			}
+			.game-prop-feng{
+				width: 142px;
+				height: 126px;
+				background: url(../../static/game/fenghuolun.png) no-repeat;
+				background-size:100% 100% ;
+			}
+			.game-prop-yun{
+				width: 136px;
+				height: 99px;
+				background: url(../../static/game/yun.png) no-repeat;
+				background-size:100% 100% ;
+			}
+		}
+		.game-rule{
+			display: flex;
+			justify-content: space-between;
+			margin-bottom:50px;
+			div{
+				width:141px ;
+				height: 75px;
+				white-space:nowrap;
+				color:rgb(249,211,149);
+				font-size: 25px;
+				line-height: 75px;
+				font-weight: 600;
+				text-align: center;
+			}
+			div:first-of-type{
+				background: url(../../static/game/rule.png) no-repeat;
+				background-size:100% 100% ;
+			}
+			div:last-of-type{
+				background: url(../../static/game/rule2.png) no-repeat;
+				background-size:100% 100% ;
+			}
+			
+		}
+		.bottom-land{
+			background: url(../../static/game/bottom.png) no-repeat;
+			background-size:100% 100% ;
+			width: 750px;
+			height: 260px;
+			padding:40px 85px 0;
+			box-sizing: border-box;
+			.bottom-land-xian{
+				background: url(../../static/game/zu12.png) no-repeat;
+				background-size:580px 72px ;
+				width: 580px;
+				height: 150px;
+				display: flex;
+				justify-content: space-between;
+				background-position-y:50% ;
+				box-sizing: border-box;
+				padding:0 23px;
+				.bottom-land-xian-buttonleft{
+					width: 233px;
+					height: 136px;
+					background: url(../../static/game/ConfirmAiming.png) no-repeat;
+					background-size:100% 100% ;
+				}
+				.bottom-land-xian-buttonright{
+					width: 233px;
+					height: 136px;
+					background: url(../../static/game/callgod.png) no-repeat;
+					background-size:100% 100% ;
+				}
+			}
+		}
+	}
+	.people{
+		width: 147px;
+		height: 283px;
+		background: url(../../static/game/woman.png) no-repeat;
+		background-size:100% 100% ;
+	}
+</style>
