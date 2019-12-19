@@ -31,7 +31,7 @@ export default {
 	},
 	 inject: ['isloadingshow'],
 	mounted() {
-		// this.isloadingshow(true);
+		this.isloadingshow(true);
 		let that = this;
 		let datas = {
 			url: location.href.split('#')[0]
@@ -191,7 +191,7 @@ export default {
 .home {
 	width: 750px;
 	height: 1334px;
-	background: url(../../static/homepagebg.jpg) no-repeat;
+	background: url(../../static/homepagebg.png) no-repeat;
 	background-size: 100% 100%;
 	position: relative;
 	.rulebutton {
