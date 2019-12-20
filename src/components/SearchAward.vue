@@ -9,7 +9,7 @@
 
 			<mescroll-vue ref="mescroll"  :up="mescrollUp" @init="mescrollInit">
 				<div class="SearchAward-li">
-					<div v-for="(item, index) in dataList" :key="index" :class="{ active: parseInt(index / 3) % 2 === 0 }">
+					<div v-for="(item, index) in dataList" :key="index" :class="{ active: parseInt(index / 3) % 2 === 0,nomargin:parseInt(index+1)%3===0 }">
 						{{ item.memberId }}
 					</div>
 				</div>
@@ -118,6 +118,11 @@ export default {
 </script>
 
 <style scoped lang="less">
+	.box{
+		background: url(../../static/bg.png) repeat;
+		background-size: 100% 100%;
+		height: 100%;
+	}
 //刷新插件的样式
 .mescroll {
 	max-height: 750px;
@@ -195,16 +200,20 @@ export default {
 		max-height: 750px;
 		overflow: scroll;
 		display: flex;
-		justify-content: space-between;
+		justify-content: flex-start;
 		flex-wrap: wrap;
 		div {
 			padding: 10px 30px;
 			text-align: center;
 			height: 40px;
 			width: 150px;
+			margin-right:12px;
 		}
 		.active {
 			background-color: #f0c072;
+		}
+		.nomargin{
+			margin-right: 0;
 		}
 	}
 }

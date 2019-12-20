@@ -78,9 +78,9 @@ li {
 	list-style-type: none;
 }
 .box {
-	background-image: url(../../static/bg.png);
+	background: url(../../static/bg.png) repeat;
 	background-size: 100% 100%;
-	// height: 100%;
+	height: 100%;
 	// position: fixed;
 	// width: 750px;
 	color: black;

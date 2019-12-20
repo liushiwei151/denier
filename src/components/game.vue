@@ -55,12 +55,12 @@ export default {
 		donghua(){
 			let canvas = document.getElementById("peoples");
 			let canvaswh=canvas.getBoundingClientRect();
-			console.log(canvaswh)
 			let dir =100;
 			let xx =canvas.getContext("2d");
 			let width =canvaswh.width;
 			let height =canvaswh.height;
 			let exp =1;
+			console.log(height,width)
 			 xx.clearRect(0,0,width,height);
 			 xx.fillStyle = "blue";//定义颜色
 			 xx.beginPath();//重新开始画，防止冲突重叠

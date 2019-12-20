@@ -3,8 +3,8 @@
 		<div class="home">
 			<div class="rulebutton" @click="goto('rule')"></div>
 			<div class="money">
-				<div class="MoneyGod" @click="!isguanzhu?isshow=false:goto('MoneyGod')"><div class="cursor"></div></div>
-				<div class="Fortunes" @click="!isguanzhu?isshow=false:goto('Fortunes')"></div>
+				<div class="MoneyGod" @click="!isguanzhu ? (isshow = false) : goto('MoneyGod')"><div class="cursor"></div></div>
+				<div class="Fortunes" @click="!isguanzhu ? (isshow = false) : goto('Fortunes')"></div>
 				<div class="callMoney" @click="onlygoto()"></div>
 			</div>
 		</div>
@@ -26,10 +26,10 @@ export default {
 			num: 100,
 			isshow: true,
 			//是否关注了
-			isguanzhu:''
+			isguanzhu: ''
 		};
 	},
-	 inject: ['isloadingshow'],
+	inject: ['isloadingshow'],
 	mounted() {
 		this.isloadingshow(true);
 		let that = this;
@@ -44,36 +44,56 @@ export default {
 					timestamp: res.data.data.timestamp, // 必填，生成签名的时间戳
 					nonceStr: res.data.data.nonceStr, // 必填，生成签名的随机串
 					signature: res.data.data.signature, // 必填，签名
-					jsApiList: ['getLocation','startRecord','stopRecord','playVoice','uploadVoice'] // 必填，需要使用的JS接口列表
+					jsApiList: ['getLocation', 'startRecord', 'stopRecord', 'playVoice', 'uploadVoice','updateAppMessageShareData','updateTimelineShareData'] // 必填，需要使用的JS接口列表
 				});
-				console.log("wx获取权限结束")
-				that.wx.ready(function(){
-					console.log("开始获取坐标接口")
-					that.wx.getLocation({
-					  type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-					  success: function (res) {
-						  console.log('获取结束')
-					    var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
-					    var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
-					    var speed = res.speed; // 速度，以米/每秒计
-					    var accuracy = res.accuracy; // 位置精度
-						let data = {
-							latitude: latitude||0,
-							longitude: longitude||0
-						};
-						api.subscribe(data).then(res => {
-							console.log('调取subscribe接口成功')
-							if (res.data.code == 200) {
-								that.isshow = res.data.data.isSubscribe;
-								that.isguanzhu=res.data.data.isSubscribe;
-								that.isloadingshow(false);
-							} else {
-								alert('认证失败');
-							}
-						});
-					  }
+				console.log('wx获取权限结束');
+				let url ='http://qrhhl.yunyutian.cn/huanghelou1916-center/wx/gCode?name=toYq';
+				that.wx.ready(function() {
+					//发送给朋友
+					that.wx.updateAppMessageShareData({
+						title: '乐享黄鹤楼，共度中支年', // 分享标题
+						desc: '码上发财！圣诞扫码好运来！', // 分享描述
+						link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+						imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
+						success: function() {
+							console.log('分享设置成功')
+						}
 					});
-				})
+					//分享朋友圈
+					 that.wx.updateTimelineShareData({ 
+					    title: '乐享黄鹤楼，共度中支年', // 分享标题
+					    link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+					    imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
+					    success: function () {
+					      // 设置成功
+					    }
+					  });
+					console.log('开始获取坐标接口');
+					that.wx.getLocation({
+						type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+						success: function(res) {
+							console.log('获取结束');
+							var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+							var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+							var speed = res.speed; // 速度，以米/每秒计
+							var accuracy = res.accuracy; // 位置精度
+							let data = {
+								latitude: latitude || 0,
+								longitude: longitude || 0
+							};
+							api.subscribe(data).then(res => {
+								console.log('调取subscribe接口成功');
+								if (res.data.code == 200) {
+									that.isshow = res.data.data.isSubscribe;
+									that.isguanzhu = res.data.data.isSubscribe;
+									that.isloadingshow(false);
+								} else {
+									alert('认证失败');
+								}
+							});
+						}
+					});
+				});
 			}
 		});
 		//测试使用，正式时删除start
@@ -83,9 +103,9 @@ export default {
 		};
 		api.subscribe(data).then(res => {
 			if (res.data.code == 200) {
-				console.log('开始测试环境下调取接口')
+				console.log('开始测试环境下调取接口');
 				that.isshow = res.data.data.isSubscribe;
-				that.isguanzhu=res.data.data.isSubscribe;
+				that.isguanzhu = res.data.data.isSubscribe;
 				this.isloadingshow(false);
 			} else {
 				alert('认证失败');
@@ -97,11 +117,14 @@ export default {
 		goto(e) {
 			this.$router.push(e);
 		},
-		close(){
-			this.isshow=true
+		close() {
+			this.isshow = true;
 		},
-		onlygoto(){
-			this.$layer.msg('活动时间为1月1日- 2月9日，敬请期待')
+		onlygoto() {
+			//正式
+			// this.$layer.msg('活动时间为1月1日- 2月9日，敬请期待');
+			//测试
+			this.$router.push('game');
 		}
 	}
 };
@@ -192,13 +215,15 @@ export default {
 	// width: 100%;
 	// height: 100%;
 	// background-color: rgb(56, 134, 198);
+	// background-color: rgb(56, 133, 197);
+	height: 100%;
 }
 .home {
 	width: 750px;
-	height: 1334px;
+	height: 100%;
 	background: url(../../static/homepagebg.png) no-repeat;
 	background-size: 100% 100%;
-	position: relative;
+	position: fixed;
 	.rulebutton {
 		width: 95px;
 		height: 99px;
