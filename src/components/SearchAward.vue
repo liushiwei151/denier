@@ -5,7 +5,7 @@
 				<input type="tel" maxlength="7" placeholder="输入楼主编号" v-model="cusnum" />
 				<div class="SearchAward-img" @click="souch"><div><img src="../../static/souch.png" alt="" /></div></div>
 			</div>
-			<div class="SearchAward-text">恭喜以下{{ allnum}}位楼主，喜提黄鹤宝盒！</div>
+			<div class="SearchAward-text">恭喜以下{{ allnum}}位楼主，喜提财神宝盒！</div>
 
 			<mescroll-vue ref="mescroll"  :up="mescrollUp" @init="mescrollInit">
 				<div class="SearchAward-li">

@@ -5,7 +5,7 @@
 			<div class="money">
 				<div class="MoneyGod" @click="!isguanzhu?isshow=false:goto('MoneyGod')"><div class="cursor"></div></div>
 				<div class="Fortunes" @click="!isguanzhu?isshow=false:goto('Fortunes')"></div>
-				<div class="callMoney" @click="goto('game')"></div>
+				<div class="callMoney" @click="onlygoto()"></div>
 			</div>
 		</div>
 		<div class="modal" :class="{ show: !isshow }">
@@ -76,13 +76,14 @@ export default {
 				})
 			}
 		});
-		//测试使用，正式时删除
+		//测试使用，正式时删除start
 		let data = {
 			latitude: 0,
 			longitude: 0
 		};
 		api.subscribe(data).then(res => {
 			if (res.data.code == 200) {
+				console.log('开始测试环境下调取接口')
 				that.isshow = res.data.data.isSubscribe;
 				that.isguanzhu=res.data.data.isSubscribe;
 				this.isloadingshow(false);
@@ -90,6 +91,7 @@ export default {
 				alert('认证失败');
 			}
 		});
+		//测试使用，正式时删除end
 	},
 	methods: {
 		goto(e) {
@@ -97,6 +99,9 @@ export default {
 		},
 		close(){
 			this.isshow=true
+		},
+		onlygoto(){
+			this.$layer.msg('活动时间为1月1日- 2月9日，敬请期待')
 		}
 	}
 };

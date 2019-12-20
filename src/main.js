@@ -6,9 +6,12 @@ import router from './router'
 import axios from 'axios'
 import qs from 'qs'
 import wx from 'weixin-js-sdk'
+import layer from 'vue-layer'
+import 'vue-layer/lib/vue-layer.css'
 
 Vue.prototype.$axios = axios    //全局注册，使用方法为:this.$axios
 Vue.prototype.qs = qs
+Vue.prototype.$layer = layer(Vue)
 Vue.prototype.wx=wx
 
 Vue.config.productionTip = false

@@ -1,6 +1,7 @@
 <template>
 	<div>
 		<div class="gamebg" :style="{backgroundPositionY: index + 'px'}">
+			<div class="game-peoples"><canvas id="peoples"></canvas></div>
 			<div class="game-content">
 				<div class="game-prop">
 					<div class="game-prop-zu"></div>
@@ -19,7 +20,7 @@
 				</div>
 			</div>
 		</div>
-		<div class="people"  :style="{position:'fixed',bottom:bottomum+'px',left:leftNum+'px'}" ></div>
+		<div class="people"  :style="{position:'fixed',bottom:bottomum,left:leftNum+'px'}" ></div>
 	</div>
 </template>
 
@@ -40,16 +41,37 @@ export default {
 	computed:{
 		// 人物的位置
 		bottomum:()=>{
-			return 20+10
+			return '30px'
 		},
 		leftNum:()=>{
 			return 100+20
 		}
 	},
 	mounted() {
-		setInterval(this.top,1000000)
+		// setInterval(this.top,1000000)
+		setInterval(this.donghua,1000)
 	},
 	methods: {
+		donghua(){
+			let canvas = document.getElementById("peoples");
+			let canvaswh=canvas.getBoundingClientRect();
+			console.log(canvaswh)
+			let dir =100;
+			let xx =canvas.getContext("2d");
+			let width =canvaswh.width;
+			let height =canvaswh.height;
+			let exp =1;
+			 xx.clearRect(0,0,width,height);
+			 xx.fillStyle = "blue";//定义颜色
+			 xx.beginPath();//重新开始画，防止冲突重叠
+			 xx.arc(dir,100,20,0,Math.PI*2,1);//x,y坐标,半径,圆周率，
+			 xx.closePath();//结束画布，防止冲突重叠
+			 xx.fill();//渲染结束
+			 dir = dir + exp;
+			 if(dir == 0 || dir==width){
+			  exp = exp * (-1);//掉头位置
+				}
+		},
 		top(){
 			this.index=this.index+2;
 		},
@@ -92,6 +114,18 @@ export default {
 };
 </script>
 <style scoped lang="less">
+	.game-peoples{
+		width:750px;
+		height:1074px;
+		position: fixed;
+		top:0;
+		left: 0;
+		#peoples{
+			width: 100%;
+			height: 100%;
+		}
+	}
+	
 	// 灰色滤镜
 	.gray{
 		filter: grayscale(100%);

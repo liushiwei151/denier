@@ -21,6 +21,7 @@
     "qs": "^6.9.1",
     "recorder-core": "^1.0.19120900",
     "vue": "^2.5.2",
+    "vue-layer": "^1.1.7",
     "vue-router": "^3.0.1",
     "weixin-js-sdk": "^1.4.0-test"
   },
