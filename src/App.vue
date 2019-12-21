@@ -1,6 +1,6 @@
 <template>
 	<div id="app">
-		<keep-alive><router-view /></keep-alive>
+		<keep-alive exclude="game"><router-view /></keep-alive>
 		<div class="loading" v-if="isshow"><div class="loadingimg"></div></div>
 	</div>
 </template>
@@ -19,7 +19,7 @@ export default {
 		};
 	},
 	mounted() {
-		this.$router.push('/');
+		// this.$router.push('/');
 	},
 	methods: {
 		isloadingshow(e) {
