@@ -47,7 +47,7 @@ export default {
 					jsApiList: ['getLocation', 'startRecord', 'stopRecord', 'playVoice', 'uploadVoice','updateAppMessageShareData','updateTimelineShareData'] // 必填，需要使用的JS接口列表
 				});
 				console.log('wx获取权限结束');
-				let url ='http://qrhhl.yunyutian.cn/huanghelou1916-center/wx/gCode?name=toYq';
+				let url ='https://wx.hhl1916.com/huanghelou1916-center/wx/gCode?name=toYq';
 				that.wx.ready(function() {
 					//发送给朋友
 					that.wx.updateAppMessageShareData({
@@ -97,7 +97,7 @@ export default {
 			}
 		});
 		//测试使用，正式时删除start
-		let data = {
+		/*let data = {
 			latitude: 0,
 			longitude: 0
 		};
@@ -110,7 +110,7 @@ export default {
 			} else {
 				alert('认证失败');
 			}
-		});
+		});*/
 		//测试使用，正式时删除end
 	},
 	methods: {
@@ -122,9 +122,9 @@ export default {
 		},
 		onlygoto() {
 			//正式
-			// this.$layer.msg('活动时间为1月1日- 2月9日，敬请期待');
+			this.$layer.msg('活动时间为1月1日- 2月9日，敬请期待');
 			//测试
-			this.$router.push('game');
+			// this.$router.push('game');
 		}
 	}
 };

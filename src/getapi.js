@@ -1,7 +1,7 @@
 import axios from 'axios'
 import qs from 'qs'
 axios.defaults.timeout = 10000; //响应时间
- axios.defaults.baseURL = 'http://192.168.2.117:9100';   //配置接口地址
+ // axios.defaults.baseURL = 'http://192.168.2.117:9100';   //配置接口地址
 axios.defaults.withCredentials = true;
 
 //POST传参序列化(添加请求拦截器)
