@@ -4,8 +4,8 @@
 			<div class="game-peoples"><canvas id="peoples"></canvas></div>
 			<div class="bottom-land">
 				<div class="bottom-land-xian">
-					<div class="bottom-land-xian-buttonleft" @click="fn"></div>
-					<div class="bottom-land-xian-buttonright"></div>
+					<div class="bottom-land-xian-buttonleft" :style="{backgroundImage:'url(../../static/game/'+leftbutton+'.png)'}" @click="truemz"></div>
+					<div class="bottom-land-xian-buttonright" ></div>
 				</div>
 			</div>
 		</div>
@@ -16,26 +16,31 @@
 			<div class="game-prop-yun"></div>
 		</div>
 		<div class="game-rule">
-			<div>活动规则</div>
+			<div @click="showmodal('actrule')">活动规则</div>
 			<div>财运足迹</div>
 		</div>
-		<div class="xuli">
-				<div>蓄力值：{{xuli}}</div>
-				<div class="xulicao">
-					<div :style="{width:xuli+'%'}"></div>
-				</div>
+		<div class="xuli" v-if="gameProgress=='forceFront'">
+			<div>蓄力值：{{ xuli }}</div>
+			<div class="xulicao"><div :style="{ width: xuli + '%' }"></div></div>
 		</div>
-		<modal></modal>
+		<div class="lasttime" v-if="gameProgress=='forceAfter'">
+			倒计时：{{timenum}}
+		</div>
+		<modal :haswhat="haswh" :isshow="modalshow" @closemodal="closemodal" @confirm="confirm"></modal>
 	</div>
 </template>
 
 <script>
 import api from '@/getapi.js';
-import modal from '@/components/modal'
+import modal from '@/components/modal';
 export default {
 	name: 'game',
 	data() {
 		return {
+			//modal弹出的内容
+			haswh: 'sex',
+			modalshow: true,
+			//微信录音的id
 			localId: '',
 			serverId: '',
 			//返回的音频
@@ -43,12 +48,15 @@ export default {
 			voice: '',
 			index: 0,
 			//返回的蓄力值
-			xuli:30,
+			xuli: 30,
 			//人物的图片对象
 			peopleimg: '',
 			//选中是谁的图像
-			imgurl: '/static/game/man.png',
-			imgIsLoaded: 'false', //图片是否加载完成;
+			imgurl: '/static/game/woman.png',
+			// 指针图片
+			pointimg: '/static/game/point.png',
+			imgIsLoaded: false, //人物图片是否加载完成;
+			imgIspoint: false, //指针图片是否加载完成
 			//canvas对象
 			canvas: '',
 			//人物图像的比例
@@ -56,58 +64,156 @@ export default {
 			imgheight: '',
 			//人物的坐标
 			imgx: 0,
-			imgy: 0
+			imgy: 0,
+			//指针的循环对象
+			movep:'',
+			degrees:0,//指针度数
+			leftbutton:'ConfirmAiming',//button按钮的样式
+			flag:true,//指针方向true右false左
+			timenum:10,//倒计时时间
+			//游戏进度确定倒计时和蓄力曹的切换
+			gameProgress:'forceAfter'
 		};
 	},
-	components:{
+	components: {
 		modal
 	},
 	mounted() {
 		this.loadImg();
+		// this.movepoint();
 	},
 	methods: {
-		fn() {
-			let that = this;
-			//尝试旋转图像
-			// that.context.translate(this.canvas.width,this.canvas.height);
-			// that.context.rotate(Math.PI/4);
-			let move = setInterval(() => {
-				// that.imgx=that.imgx-1;
-				if (that.imgy < 50) {
-					console.log('移动结束');
-					clearInterval(move);
-				} else {
-					console.log('移动中');
-					that.imgx = that.imgx - 0.5;
-					that.imgy = that.imgy - 1;
-					that.index++;
+		//绑定长按按钮
+		touch(){
+			let starttime ='';
+			let endtime='';
+			let that =this;
+			let callgod =document.getElementsByClassName('bottom-land-xian-buttonright')[0];
+			callgod.addEventListener('touchstart',function(){
+				starttime=(new Date()).getTime();
+				let timer=setTimeout(()=>{
+					//开始录音
+					that.timenum='03';
+					let num =3;
+					let timealse=setInterval(()=>{
+						num--;
+						if(num<=3&&num>=0){
+							that.timenum='0'+num;
+						}else if(num<0){
+							that.timenum=0;
+						}
+					},1000)
+				},700)
+			});
+			callgod.addEventListener('touchend',function(){
+				endtime=(new Date()).getTime();
+				if((endtime-starttime)<700){
+					//结束录音
 				}
-				that.drawImage();
-			}, 10);
+			})
+		},
+		// 确认瞄准
+		truemz(){
+			if(this.leftbutton=='ConfirmAiming'){
+				this.leftbutton='ReAiming';
+				clearInterval(this.movep);
+			}else if(this.leftbutton=='ReAiming'){
+				this.leftbutton='ConfirmAiming';
+				this.movepoint();
+			}else{
+				return;
+			}
+			
+			console.log('度数'+this.degrees)
+		},
+		// 画布循环内容
+		allcanvas(){
+			// 先清空
+			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+			// 再绘图
+			this.drawImage();
+			// this.drawPoint();
 		},
 		// 初始化canvas属性
 		loadImg() {
-			this.peopleimg = new Image();
 			let that = this;
 			this.canvas = document.getElementById('peoples');
-			this.context = this.canvas.getContext('2d'); //画布显示二维图片
+			this.context = this.canvas.getContext('2d'); //画布显示人物
+			this.pointcont = this.canvas.getContext('2d'); //指针的画布
 			this.canvas.width = this.canvas.offsetWidth;
-			this.canvas.height = this.canvas.offsetWidth;
+			this.canvas.height = this.canvas.offsetHeight;
 			this.imgwidth = document.body.clientWidth / 750;
 			this.imgheight = document.body.clientHeight / 1334;
+			// this.context.translate(73.5, 141.5);
+			// this.context.rotate(0);
+			// that.imgx=that.imgx-73.5;
+			// that.imgy=that.imgy-141.5;
+			this.peopleimg = new Image();
 			this.peopleimg.src = this.imgurl;
-			that.imgx = (that.canvas.width - that.imgwidth * 147) / 2;
-			that.imgy = that.canvas.height - that.imgheight *283;
 			this.peopleimg.onload = function() {
 				that.imgIsLoaded = true;
+				that.imgx = (that.canvas.width - that.imgwidth * (that.peopleimg.width+30)) / 2;
+				that.imgy = that.canvas.height - that.imgheight * that.peopleimg.height;
 				that.drawImage();
 			};
-			console.log(this.imgx, this.imgy);
+			//指针图像
+			this.ponitimg = new Image();
+			this.ponitimg.src = this.pointimg;
+			this.ponitimg.onload = function() {
+				that.imgIspoint = true;
+				that.drawPoint();
+			};
 		},
-		// 调用图片
+		// 指针转动
+		movepoint(){
+			let degrees =this.degrees;
+			let flag =this.flag;
+			this.movep=setInterval(()=>{
+				if(flag){
+					degrees+=2;
+					if(degrees>=90){
+						flag =false;
+					}
+				}else{
+					degrees-=2;
+					if(degrees<=-90){
+						flag=true;
+					}
+				}
+				this.pointcont.clearRect(0, 0, this.canvas.width, this.canvas.height);
+				this.drawPoint(degrees);
+				this.drawImage();
+				this.flag=flag;
+				this.degrees=degrees;
+			},50)
+		},
+		// 调用指针
+		drawPoint(e) {
+			let num=e||0;
+			let that = this;
+			that.pointcont.save();
+			that.pointcont.translate((this.canvas.width)/2,this.canvas.height-(this.peopleimg.height)*this.imgheight)
+			that.pointcont.rotate(Math.PI/180*num)
+			that.pointcont.drawImage(
+				that.ponitimg,
+				0,
+				0,
+				this.ponitimg.width,
+				this.ponitimg.height,
+				-this.ponitimg.width*this.imgwidth*0.5,
+				-this.ponitimg.height*this.imgheight,
+				this.ponitimg.width * this.imgwidth,
+				this.ponitimg.height * this.imgheight
+			);
+			that.pointcont.restore();
+		},
+		// 调用人物图片
 		drawImage() {
 			let that = this;
-			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+			// this.context.save();
+			// this.context.translate((that.canvas.width - that.imgwidth * 147) / 2+147,that.canvas.height - that.imgheight *283);
+			// this.context.rotate(Math.PI/16)
+			that.context.save();
 			this.context.drawImage(
 				that.peopleimg, //规定要使用的图像、画布或视频。
 				0,
@@ -119,7 +225,44 @@ export default {
 				this.peopleimg.width * this.imgwidth,
 				this.peopleimg.height * this.imgheight //要使用的图像的宽度、高度
 			);
-			console.log(this.imgx,this.imgy)
+			that.context.restore();
+		},
+		//弹出modal的内容
+		showmodal(e) {
+			this.haswh = e;
+			this.modalshow = true;
+		},
+		//关闭modal框
+		closemodal() {
+			this.modalshow = false;
+		},
+		//确认选择男女
+		confirm(data){
+			if(data=='man'||data=='woman'){
+				this.imgurl='/static/game/'+data+'.png';
+				this.loadImg();
+				this.drawPoint();
+				this.haswh='start';
+			}else if(data=='startgame'){
+				this.closemodal();
+				this.movepoint();
+				let time =10;
+				let lasttime=setInterval(()=>{
+					time--;
+					if(time>=1&&time<=9){
+						this.timenum='0'+time;
+					}else if(time<=0){
+						this.timenum=0;
+						this.leftbutton='re';
+						//绑定长按按钮
+						this.touch();
+						clearInterval(lasttime);
+						console.log('停止');
+					}
+					console.log(time);
+				},1000)
+			}
+			console.log(this.imgurl)
 		},
 		// 开始录音
 		star() {
@@ -252,7 +395,6 @@ export default {
 		.bottom-land-xian-buttonleft {
 			width: 233px;
 			height: 136px;
-			background: url(../../static/game/ConfirmAiming.png) no-repeat;
 			background-size: 100% 100%;
 		}
 		.bottom-land-xian-buttonright {
@@ -263,31 +405,44 @@ export default {
 		}
 	}
 }
-.xuli{
+//蓄力槽
+.xuli {
 	position: fixed;
-	top:7%;
-	color:rgb(240,131,49);
+	top: 7%;
+	color: rgb(240, 131, 49);
 	font-size: 28px;
 	width: 100%;
 	display: flex;
 	justify-content: center;
 	flex-direction: column;
 	align-items: center;
-	.xulicao{
-		margin-top:15px ;
+	.xulicao {
+		margin-top: 15px;
 		width: 300px;
 		height: 35px;
 		border: solid 3px black;
 		border-radius: 30px;
-		box-shadow: 0px 10px 10px rgb(208,110,106) inset;
+		box-shadow: 0px 10px 10px rgb(208, 110, 106) inset;
 		overflow: hidden;
 		box-sizing: border-box;
-		div{
-			height:40px;
-			border-right:solid 3px black;
-			background-color:rgb(240,131,49) ;
+		div {
+			height: 40px;
+			border-right: solid 3px black;
+			background-color: rgb(240, 131, 49);
 		}
 	}
+}
+//倒计时样式
+.lasttime{
+	position: fixed;
+	top: 7%;
+	color: rgb(241, 131, 49);
+	font-size: 58px;
+	width: 100%;
+	display: flex;
+	justify-content: center;
+	flex-direction: column;
+	align-items: center;
 }
 .people {
 	width: 147px;

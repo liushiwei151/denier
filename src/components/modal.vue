@@ -3,15 +3,15 @@
 		<!-- 选择性别 -->
 		<div class="chose" v-if="haswhat=='sex'">
 			<div class="chose-people">
-				<div><img src="/static/game/nan.png" alt="男性"></div>
+				<div><img src="/static/game/nan.png" alt="男性" @click="confirm('man')"></div>
 			</div>
 			<div class="chose-people">
-				<div><img src="/static/game/nv.png" alt="女性"></div>
+				<div><img src="/static/game/nv.png" alt="女性" @click="confirm('woman')"></div>
 			</div>
 		</div>
 		<!-- 开始游戏 -->
 		<div v-if="haswhat=='start'">
-			<div class="startgame">
+			<div class="startgame" @click="confirm('startgame')">
 				<img src="/static/game/startgame.png" alt="开始游戏">
 			</div>
 		</div>
@@ -69,14 +69,26 @@
 		name:'modal',
 		data(){
 			return{
-				haswhat:'lookgod',
-				isshow:false,
 				qianh:'084450',
+			}
+		},
+		props:{
+			haswhat:{
+				type:String,
+				default:'sex'
+			},
+			isshow:{
+				type:Boolean,
+				default:false,
 			}
 		},
 		methods:{
 			close(){
-				this.isshow=false;
+				this.$emit('closemodal');
+			},
+			//选中男女
+			confirm(e){
+				this.$emit('confirm',e);
 			}
 		}
 	}
