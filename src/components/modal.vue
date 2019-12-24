@@ -61,6 +61,21 @@
 				<div class="closegame" @click="close"><div></div></div>
 			</div>
 		</div>
+		<!-- 财运足迹 -->
+		<div v-if="haswhat=='moneyget'" class="moneyget">
+			<div class="moneytext"></div>
+			<div class="moneygetBox">
+				<div class="moneytitle">
+					<div><span>时间</span></div>
+					<div><span>奖励</span></div>
+				</div>
+				<ul>
+					<li v-for="a in 20"><div><span>1月1日</span></div>
+					<div><span>财运签号：0000001</span></div></li>
+				</ul>
+			</div>
+			<div class="closegame" @click="close"><div></div></div>
+		</div>
 	</div>
 </template>
 
@@ -234,6 +249,66 @@
 			background: url(../../static/game/god.png) no-repeat;
 			background-size:100% 100% ;
 			margin: 50px auto ;
+		}
+	}
+	// 财运足迹
+	.moneyget{
+		background: url(../../static/game/moneyget.png) no-repeat;
+		background-size:100% 100% ;
+		width: 750px;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-direction: column;
+		.moneytext{
+			background: url(../../static/game/moneytext.png) no-repeat;
+			background-size:100% 100% ;
+			width: 448px;
+			height: 77px;
+		}
+		.moneygetBox{
+			background: url(../../static/game/moneygetbox.png) no-repeat;
+			background-size:100% 100% ;
+			width: 700px;
+			height: 790px;
+			padding:7px 13px 7px 7px;
+			box-sizing: border-box;
+			text-align: center;
+			ul{
+				height: 660px;
+				margin-bottom:60px;
+				box-sizing: border-box;
+				overflow-y: scroll;
+			}
+			li{
+				display: flex;
+				justify-content:space-around;
+				font-size: 22.61px;
+				color:black;
+				border-bottom:dashed 2px black;
+				box-sizing: border-box;
+				padding:8px 0;
+				div{
+					width: 50%;
+				}
+			}
+			li:first-of-type{
+				padding:20px 0;
+			}
+			.moneytitle{
+				height: 70px;
+				display: flex;
+				justify-content: space-around;
+				align-items: center;
+				color:#F9D395;
+				text-indent: 20px;
+				letter-spacing: 20px;
+				font-size: 32px;
+				div{
+					width: 50%;
+				}
+			}
 		}
 	}
 </style>

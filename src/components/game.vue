@@ -4,28 +4,30 @@
 			<div class="game-peoples"><canvas id="peoples"></canvas></div>
 			<div class="bottom-land">
 				<div class="bottom-land-xian">
-					<div class="bottom-land-xian-buttonleft" :style="{backgroundImage:'url(../../static/game/'+leftbutton+'.png)'}" @click="truemz"></div>
-					<div class="bottom-land-xian-buttonright" ></div>
+					<div
+						class="bottom-land-xian-buttonleft"
+						:style="{ backgroundImage: 'url(../../static/game/' + leftbutton + '.png)' }"
+						@click="truemz"
+					></div>
+					<div class="bottom-land-xian-buttonright"></div>
 				</div>
 			</div>
 		</div>
 		<!-- 往下落的动画 -->
 		<div class="game-prop">
-			<div class="game-prop-zu"></div>
-			<div class="game-prop-feng"></div>
-			<div class="game-prop-yun"></div>
+			<div @click="gameProp(10)" class="game-prop-zu" :style="{ filter: day >= 10 ? '' : 'grayscale(100%)' }" ></div>
+			<div @click="gameProp(20)" class="game-prop-feng" :style="{ filter: day >= 20 ? '' : 'grayscale(100%)' }"></div>
+			<div @click="gameProp(30)" class="game-prop-yun" :style="{ filter: day >= 30 ? '' : 'grayscale(100%)' }"></div>
 		</div>
 		<div class="game-rule">
 			<div @click="showmodal('actrule')">活动规则</div>
-			<div>财运足迹</div>
+			<div @click="showmodal('moneyget')">财运足迹</div>
 		</div>
-		<div class="xuli" v-if="gameProgress=='forceFront'">
+		<div class="xuli" v-if="gameProgress == 'forceFront'">
 			<div>蓄力值：{{ xuli }}</div>
 			<div class="xulicao"><div :style="{ width: xuli + '%' }"></div></div>
 		</div>
-		<div class="lasttime" v-if="gameProgress=='forceAfter'">
-			倒计时：{{timenum}}
-		</div>
+		<div class="lasttime" v-if="gameProgress == 'forceAfter'">倒计时：{{ timenum }}</div>
 		<modal :haswhat="haswh" :isshow="modalshow" @closemodal="closemodal" @confirm="confirm"></modal>
 	</div>
 </template>
@@ -37,8 +39,10 @@ export default {
 	name: 'game',
 	data() {
 		return {
+			//签到的天数
+			day: null,
 			//modal弹出的内容
-			haswh: 'sex',
+			haswh: '',
 			modalshow: true,
 			//微信录音的id
 			localId: '',
@@ -66,68 +70,153 @@ export default {
 			imgx: 0,
 			imgy: 0,
 			//指针的循环对象
-			movep:'',
-			degrees:0,//指针度数
-			leftbutton:'ConfirmAiming',//button按钮的样式
-			flag:true,//指针方向true右false左
-			timenum:10,//倒计时时间
+			movep: '',
+			degrees: 0, //指针度数
+			leftbutton: 'ConfirmAiming', //button按钮的样式
+			flag: true, //指针方向true右false左
+			timenum: 10, //倒计时时间
 			//游戏进度确定倒计时和蓄力曹的切换
-			gameProgress:'forceAfter'
+			gameProgress: 'forceAfter',
+			timer: '', //长按点击的循环对象
+			//游戏剩余的次数
+			gamenum:null,
 		};
 	},
 	components: {
 		modal
+	},
+	created() {
+		this.getstart();
+		this.getrecord();
 	},
 	mounted() {
 		this.loadImg();
 		// this.movepoint();
 	},
 	methods: {
-		//绑定长按按钮
-		touch(){
-			let starttime ='';
-			let endtime='';
+		// 接口
+		// 获得用户是否选择了性别是否有性别的接口
+		getstart(){
+			let data={
+				type:0
+			}
 			let that =this;
-			let callgod =document.getElementsByClassName('bottom-land-xian-buttonright')[0];
-			callgod.addEventListener('touchstart',function(){
-				starttime=(new Date()).getTime();
-				let timer=setTimeout(()=>{
-					//开始录音
-					that.timenum='03';
-					let num =3;
-					let timealse=setInterval(()=>{
-						num--;
-						if(num<=3&&num>=0){
-							that.timenum='0'+num;
-						}else if(num<0){
-							that.timenum=0;
-						}
-					},1000)
-				},700)
-			});
-			callgod.addEventListener('touchend',function(){
-				endtime=(new Date()).getTime();
-				if((endtime-starttime)<700){
-					//结束录音
+			api.start(data).then((res)=>{
+				if(res.data.code==200){
+					this.day=res.data.data.count;
+					this.gamenum=res.data.data.user.gamesPlayed
+					if(res.data.data.user.gender==null){
+						that.haswh='sex'
+					}else if(res.data.data.user.gender==1){
+						that.imgurl = '/static/game/man.png';
+						this.loadImg();
+						that.haswh='start';
+					}else if(res.data.data.user.gender==2){
+						that.imgurl = '/static/game/woman.png';
+						this.loadImg();
+						that.haswh='start';
+					}
 				}
+			}).catch((err)=>{
+				this.$layer.msg('性别获取失败')
 			})
 		},
+		//游戏足迹的接口
+		getrecord(){
+			let data ={
+				pageNum:10,
+				pageSize:10
+			}
+			api.record(data).then((res)=>{
+				console.log(res);
+			}).catch((err)=>{
+				console.log(err);
+			})
+		},
+		//点击左边电话
+		gameProp(e){
+			if(e==10&&e<=this.day){
+				const zu =document.getElementsByClassName('game-prop-zu')[0];
+			zu.classList.add('animated', 'heartBeat');
+			setTimeout(()=>{
+				zu.classList.remove('animated', 'heartBeat')
+			},1000)
+			}else if(e==20&&e<=this.day){
+				const feng =document.getElementsByClassName('game-prop-feng')[0];
+				feng.classList.add('animated', 'heartBeat');
+				setTimeout(()=>{
+					feng.classList.remove('animated', 'heartBeat')
+				},1000)
+			}else if(e==30&&e<=this.day){
+				const yun =document.getElementsByClassName('game-prop-yun')[0];
+				yun.classList.add('animated', 'heartBeat');
+				setTimeout(()=>{
+					yun.classList.remove('animated', 'heartBeat')
+				},1000)
+			}
+		},
+		//人物移动
+		movepeople(){
+			setInterval(()=>{
+				this.index+=30;
+				/*if(this.index<=3000){
+					this.imgy--;
+					this.drawImage();
+				}*/
+			},50)
+		},
+		//绑定长按按钮
+		touch() {
+			let starttime = '';
+			let endtime = '';
+			let that = this;
+			let callgod = document.getElementsByClassName('bottom-land-xian-buttonright')[0];
+			callgod.addEventListener('touchstart', function() {
+				starttime = new Date().getTime();
+				this.timer = setTimeout(() => {
+					//开始录音
+					that.timenum = 3;
+					let timealse = setInterval(() => {
+						if (that.timenum > 0) {
+							that.timenum--;
+						} else {
+							clearInterval(timealse);
+						}
+						console.log('倒计时中');
+					}, 1000);
+					console.log('长按开始');
+				}, 700);
+			});
+			callgod.addEventListener('touchend', function() {
+				endtime = new Date().getTime();
+				if (endtime - starttime < 700) {
+					clearTimeout(this.timer);
+					console.log('长按结束');
+					
+				} else {
+					//模拟直接移动
+					that.movepeople();
+					//结束录音
+					console.log('结束录音');
+				}
+			});
+		},
 		// 确认瞄准
-		truemz(){
-			if(this.leftbutton=='ConfirmAiming'){
-				this.leftbutton='ReAiming';
+		truemz() {
+			if (this.leftbutton == 'ConfirmAiming') {
+				this.leftbutton = 'ReAiming';
 				clearInterval(this.movep);
-			}else if(this.leftbutton=='ReAiming'){
-				this.leftbutton='ConfirmAiming';
+			} else if (this.leftbutton == 'ReAiming') {
+				this.leftbutton = 'ConfirmAiming';
 				this.movepoint();
-			}else{
+			} else {
 				return;
 			}
-			
-			console.log('度数'+this.degrees)
+
+			console.log('度数' + this.degrees);
 		},
 		// 画布循环内容
-		allcanvas(){
+		allcanvas() {
 			// 先清空
 			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 			// 再绘图
@@ -140,8 +229,8 @@ export default {
 			this.canvas = document.getElementById('peoples');
 			this.context = this.canvas.getContext('2d'); //画布显示人物
 			this.pointcont = this.canvas.getContext('2d'); //指针的画布
-			this.canvas.width = this.canvas.offsetWidth;
-			this.canvas.height = this.canvas.offsetHeight;
+			this.canvas.width = this.canvas.offsetWidth * 3;
+			this.canvas.height = this.canvas.offsetHeight * 3;
 			this.imgwidth = document.body.clientWidth / 750;
 			this.imgheight = document.body.clientHeight / 1334;
 			// this.context.translate(73.5, 141.5);
@@ -152,7 +241,7 @@ export default {
 			this.peopleimg.src = this.imgurl;
 			this.peopleimg.onload = function() {
 				that.imgIsLoaded = true;
-				that.imgx = (that.canvas.width - that.imgwidth * (that.peopleimg.width+30)) / 2;
+				that.imgx = (that.canvas.width - that.imgwidth * (that.peopleimg.width + 30)) / 2;
 				that.imgy = that.canvas.height - that.imgheight * that.peopleimg.height;
 				that.drawImage();
 			};
@@ -165,43 +254,43 @@ export default {
 			};
 		},
 		// 指针转动
-		movepoint(){
-			let degrees =this.degrees;
-			let flag =this.flag;
-			this.movep=setInterval(()=>{
-				if(flag){
-					degrees+=2;
-					if(degrees>=90){
-						flag =false;
+		movepoint() {
+			let degrees = this.degrees;
+			let flag = this.flag;
+			this.movep = setInterval(() => {
+				if (flag) {
+					degrees += 2;
+					if (degrees >= 90) {
+						flag = false;
 					}
-				}else{
-					degrees-=2;
-					if(degrees<=-90){
-						flag=true;
+				} else {
+					degrees -= 2;
+					if (degrees <= -90) {
+						flag = true;
 					}
 				}
 				this.pointcont.clearRect(0, 0, this.canvas.width, this.canvas.height);
 				this.drawPoint(degrees);
 				this.drawImage();
-				this.flag=flag;
-				this.degrees=degrees;
-			},50)
+				this.flag = flag;
+				this.degrees = degrees;
+			}, 50);
 		},
 		// 调用指针
 		drawPoint(e) {
-			let num=e||0;
+			let num = e || 0;
 			let that = this;
 			that.pointcont.save();
-			that.pointcont.translate((this.canvas.width)/2,this.canvas.height-(this.peopleimg.height)*this.imgheight)
-			that.pointcont.rotate(Math.PI/180*num)
+			that.pointcont.translate(this.canvas.width / 2, this.canvas.height - this.peopleimg.height * this.imgheight);
+			that.pointcont.rotate((Math.PI / 180) * num);
 			that.pointcont.drawImage(
 				that.ponitimg,
 				0,
 				0,
 				this.ponitimg.width,
 				this.ponitimg.height,
-				-this.ponitimg.width*this.imgwidth*0.5,
-				-this.ponitimg.height*this.imgheight,
+				-this.ponitimg.width * this.imgwidth * 0.5,
+				-this.ponitimg.height * this.imgheight,
 				this.ponitimg.width * this.imgwidth,
 				this.ponitimg.height * this.imgheight
 			);
@@ -237,32 +326,56 @@ export default {
 			this.modalshow = false;
 		},
 		//确认选择男女
-		confirm(data){
-			if(data=='man'||data=='woman'){
-				this.imgurl='/static/game/'+data+'.png';
-				this.loadImg();
-				this.drawPoint();
-				this.haswh='start';
-			}else if(data=='startgame'){
-				this.closemodal();
-				this.movepoint();
-				let time =10;
-				let lasttime=setInterval(()=>{
-					time--;
-					if(time>=1&&time<=9){
-						this.timenum='0'+time;
-					}else if(time<=0){
-						this.timenum=0;
-						this.leftbutton='re';
-						//绑定长按按钮
-						this.touch();
-						clearInterval(lasttime);
-						console.log('停止');
+		confirm(data) {
+			if (data == 'man' || data == 'woman') {
+				this.imgurl = '/static/game/' + data + '.png';
+				let datas ={
+					gender:data=='man'?1:2
+				}
+				api.updateGender(datas).then((res)=>{
+					if(res.data.code==200){
+						this.haswh = 'start';
+					}else{
+						this.$layer.msg('更新性别错误，请刷新重试')
 					}
-					console.log(time);
-				},1000)
+				}).catch((err)=>{
+					this.$layer.msg('更新性别错误，请刷新重试')
+				})
+				this.loadImg();
+				// this.drawPoint();
+			} else if (data == 'startgame') {
+				let types ={
+					type:1
+				}
+				console.log('还剩'+this.gamenum);
+				if(this.gamenum>0){
+					api.start(types).then((res)=>{
+							this.closemodal();
+							this.movepoint();
+							let time = 5;
+							let lasttime = setInterval(() => {
+								time--;
+								if (time >= 1 && time <= 9) {
+									this.timenum = '0' + time;
+								} else if (time <= 0) {
+									this.timenum = 0;
+									this.leftbutton = 're';
+									clearInterval(this.movep);
+									//绑定长按按钮
+									this.touch();
+									clearInterval(lasttime);
+									console.log('停止');
+								}
+							}, 1000);
+					}).catch((err)=>{
+						console.log(err)
+					})
+				}else{
+					this.$layer.msg('抱歉您的游戏次数已用完！');
+				}
+				
+				
 			}
-			console.log(this.imgurl)
 		},
 		// 开始录音
 		star() {
@@ -433,7 +546,7 @@ export default {
 	}
 }
 //倒计时样式
-.lasttime{
+.lasttime {
 	position: fixed;
 	top: 7%;
 	color: rgb(241, 131, 49);

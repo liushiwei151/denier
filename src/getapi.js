@@ -1,7 +1,7 @@
 import axios from 'axios'
 import qs from 'qs'
 axios.defaults.timeout = 10000; //响应时间
- // axios.defaults.baseURL = 'http://192.168.2.117:9100';   //配置接口地址
+ axios.defaults.baseURL = 'http://192.168.2.118:9100';   //配置接口地址
 axios.defaults.withCredentials = true;
 
 //POST传参序列化(添加请求拦截器)
@@ -49,11 +49,33 @@ const getVoice =(id)=>{
 		}
 	})
 }
+//游戏开始前数据
+const start =(data)=>{
+	return axios.post('/yq/shout/start',data)
+}
+//更新性别
+const updateGender=(data)=>{
+	return axios.post('/yq/shout/updateGender',data)
+}
+//游戏足迹的数据
+const record =(data)=>{
+	return axios.get('/yq/shout/record',{
+		params:data
+	})
+}
+//分享加次数的接口
+const share =()=>{
+	return axios.post('/yq/shout/share')
+}
 export default {
 	subscribe,
 	fortuneSign,
 	winners,
 	fortuneList,
 	jsSign,
-	getVoice
+	getVoice,
+	start,
+	updateGender,
+	record,
+	share
 }

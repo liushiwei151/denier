@@ -8,6 +8,9 @@ import qs from 'qs'
 import wx from 'weixin-js-sdk'
 import layer from 'vue-layer'
 import 'vue-layer/lib/vue-layer.css'
+import animate from 'animate.css'
+
+Vue.use(animate)
 
 Vue.prototype.$axios = axios    //全局注册，使用方法为:this.$axios
 Vue.prototype.qs = qs
