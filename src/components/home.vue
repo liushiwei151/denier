@@ -172,10 +172,10 @@ export default {
 		},
 		onlygoto() {
 			//正式
-			this.$layer.msg('活动时间为1月1日- 2月9日，敬请期待');
+			// this.$layer.msg('活动时间为1月1日- 2月9日，敬请期待');
 			console.log('正式');
 			//测试
-			// this.$router.push('game');console.log('测试')
+			this.$router.push('game');console.log('测试')
 		}
 	}
 };

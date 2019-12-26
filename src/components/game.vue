@@ -63,7 +63,7 @@ export default {
 			localId: '',
 			serverId: '',
 			//返回的音频
-			yip: 68,
+			yip: 0,
 			voice: '',
 			index: 0,
 			//返回的蓄力值
@@ -285,9 +285,10 @@ export default {
 							callgod.classList.remove('animated', 'jello')
 						},1000)
 						//开始录音
-						// this.star();
+						/*测试*/
+						that.star();
+						/*测试*/
 						that.timenum = 3;
-						console.log(that.isclick)
 						that.isclick=false;
 						let timealse = setInterval(() => {
 							if (that.timenum > 0) {
@@ -297,11 +298,12 @@ export default {
 								/*测试*/
 								if(that.stopnum){
 									that.stopnum=false;
-									that.judgetime();
-									// that.stop();
+									/*测试*/
+									// that.judgetime();
+									that.stop();
+									/*测试*/
 								}
 							}
-							console.log('倒计时中');
 						}, 1000);
 						console.log('长按开始');
 					}, 700);
@@ -316,11 +318,12 @@ export default {
 				} else {
 					//结束录音
 					if(that.timenum>0&&that.timenum<=3){
-						/*测试*/
 						if(that.stopnum){
 							that.stopnum=false;
-							that.judgetime();
-							// that.stop();
+							/*测试*/
+							// that.judgetime();
+							that.stop();
+							/*测试*/
 						}
 					}
 					console.log(that.timenum)
@@ -356,6 +359,7 @@ export default {
 			this.canvas = document.getElementById('peoples');
 			this.context = this.canvas.getContext('2d'); //画布显示人物
 			this.pointcont = this.canvas.getContext('2d'); //指针的画布
+			this.line =this.canvas.getContext('2d');//虚线区域
 			this.canvas.width = this.canvas.offsetWidth * 3;
 			this.canvas.height = this.canvas.offsetHeight * 3;
 			this.imgwidth = document.body.clientWidth / 750;
@@ -379,6 +383,33 @@ export default {
 				that.imgIspoint = true;
 				that.drawPoint();
 			};
+			this.Dottedline();
+		},
+		//虚线区域
+		Dottedline(){
+			let cxt =this.line;
+				cxt.lineWidth = 4;
+			　　cxt.strokeStyle = 'black';
+			　　cxt.beginPath();
+			　　cxt.setLineDash([15, 15]);
+			　　cxt.moveTo(0,-2*this.canvas.height);
+			　　cxt.lineTo(this.canvas.width/2, this.canvas.height-this.peopleimg.height*this.imgheight);
+			　　cxt.stroke();
+				cxt.beginPath();
+			　　cxt.setLineDash([15, 15]);
+			　　cxt.moveTo(this.canvas.width,-2*this.canvas.height);
+			　　cxt.lineTo(this.canvas.width/2, this.canvas.height-this.peopleimg.height*this.imgheight);
+			　　cxt.stroke();
+				cxt.moveTo( 300, 300 );
+				cxt.font = '50px "微软雅黑"';           //设置字体
+			    cxt.fillStyle = "black";               //设置填充颜色为紫色
+			    cxt.textBaseline = "bottom";            //设置字体底线对齐绘制基线
+			    cxt.textAlign = "left";                 //设置字体对齐的方式
+			//     cxt.strokeText( "推荐瞄准区域", 450, 400 );
+			let arr =['推','荐','瞄','准','区','域']
+			for(let i =0;i<arr.length;i++){
+				cxt.fillText( arr[i], this.canvas.width/2-25, 350+70*i );
+			}
 		},
 		// 指针转动
 		movepoint() {
@@ -400,6 +431,7 @@ export default {
 				this.pointcont.clearRect(0, 0, this.canvas.width, this.canvas.height);
 				this.drawPoint(degrees);
 				this.drawImage();
+				this.Dottedline();
 				this.flag = flag;
 				this.degrees = degrees;
 			}, 50);
@@ -496,7 +528,7 @@ export default {
 							this.isstartgame=true;
 							this.closemodal();
 							this.movepoint();
-							let time = 5;
+							let time = 10;
 							let lasttime = setInterval(() => {
 								time--;
 								if (time >= 1 && time <= 9) {
