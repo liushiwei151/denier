@@ -2,43 +2,58 @@
 	<div>
 		<div class="gamebg" :style="{ backgroundPositionY: index + 'px' }">
 			<div class="game-peoples"><canvas id="peoples"></canvas></div>
-			<div class="bottom-land">
-				<div class="bottom-land-xian">
+			<div class="bottom-land" :style="{position:'absolute',bottom:-index+'px'}">
+				<div class="bottom-land-xian" >
 					<div
 						class="bottom-land-xian-buttonleft"
 						:style="{ backgroundImage: 'url(../../static/game/' + leftbutton + '.png)' }"
 						@click="truemz"
 					></div>
-					<div class="bottom-land-xian-buttonright"></div>
+					<div class="bottom-land-xian-buttonright" :style="{filter:iscallgod?'':'grayscale(100%)'}"></div>
 				</div>
 			</div>
 		</div>
 		<!-- 往下落的动画 -->
-		<div class="game-prop">
-			<div @click="gameProp(10)" class="game-prop-zu" :style="{ filter: day >= 10 ? '' : 'grayscale(100%)' }" ></div>
-			<div @click="gameProp(20)" class="game-prop-feng" :style="{ filter: day >= 20 ? '' : 'grayscale(100%)' }"></div>
-			<div @click="gameProp(30)" class="game-prop-yun" :style="{ filter: day >= 30 ? '' : 'grayscale(100%)' }"></div>
+		<div class="game-prop" :style="{transform:'translate(0px,'+index+'px)'}">
+			<div class="game-prop-fader">
+				<div @click="gameProp(10)" class="game-prop-zu" :style="{ filter: day >= 10 ? '' : 'grayscale(100%)'}" >
+				</div>
+				<div class="game-prop-shuom" v-show="isshuom==10">连续登陆10天获得此道具</div>
+			</div>
+			<div class="game-prop-fader">
+			<div @click="gameProp(20)" class="game-prop-feng" :style="{ filter: day >= 20 ? '' : 'grayscale(100%)'}"></div>
+			<div class="game-prop-shuom" v-show="isshuom==20">连续登陆20天获得此道具</div>
+			</div>
+			<div class="game-prop-fader">
+			<div @click="gameProp(30)" class="game-prop-yun" :style="{ filter: day >= 30 ? '' : 'grayscale(100%)'}"></div>
+			<div class="game-prop-shuom" v-show="isshuom==30">连续登陆30天获得此道具</div>
+			</div>
 		</div>
-		<div class="game-rule">
+		<div class="game-rule" :style="{transform:'translate(0px,'+index+'px)'}">
 			<div @click="showmodal('actrule')">活动规则</div>
 			<div @click="showmodal('moneyget')">财运足迹</div>
 		</div>
 		<div class="xuli" v-if="gameProgress == 'forceFront'">
-			<div>蓄力值：{{ xuli }}</div>
-			<div class="xulicao"><div :style="{ width: xuli + '%' }"></div></div>
+			<div>蓄力值：{{ yip }}</div>
+			<div class="xulicao"><div :style="{ width: yip + '%' }"></div></div>
 		</div>
 		<div class="lasttime" v-if="gameProgress == 'forceAfter'">倒计时：{{ timenum }}</div>
-		<modal :haswhat="haswh" :isshow="modalshow" @closemodal="closemodal" @confirm="confirm"></modal>
+		<modal :type="types" :datalist="dataList" :haswhat="haswh" :isshow="modalshow" @getrecord="getrecord" @chosemodal="chosemodal" @closemodal="closemodal" @confirm="confirm"></modal>
 	</div>
 </template>
 
 <script>
 import api from '@/getapi.js';
 import modal from '@/components/modal';
+	import MescrollVue from 'mescroll.js/mescroll.vue';
 export default {
 	name: 'game',
 	data() {
 		return {
+			//显示左边框说明
+			isshuom:0,
+			//获得的奖品
+			types:0,
 			//签到的天数
 			day: null,
 			//modal弹出的内容
@@ -48,7 +63,7 @@ export default {
 			localId: '',
 			serverId: '',
 			//返回的音频
-			yip: '',
+			yip: 68,
 			voice: '',
 			index: 0,
 			//返回的蓄力值
@@ -80,16 +95,30 @@ export default {
 			timer: '', //长按点击的循环对象
 			//游戏剩余的次数
 			gamenum:null,
+			//判断是否开始了游戏
+			isstartgame:false,
+			//判断是否点过录音
+			isclick:true,
+			//判断是否有性别
+			issex:null,
+			//是否能开始长按喊财神
+			iscallgod:false,
+			//足迹数据
+			dataList:'',
+			//限定stop只触发一次
+			stopnum:true,
 		};
 	},
 	components: {
-		modal
+		modal,
+		MescrollVue
 	},
 	created() {
+		this.haswh='wait';
 		this.getstart();
-		this.getrecord();
 	},
 	mounted() {
+		this.getrecord();
 		this.loadImg();
 		// this.movepoint();
 	},
@@ -104,7 +133,8 @@ export default {
 			api.start(data).then((res)=>{
 				if(res.data.code==200){
 					this.day=res.data.data.count;
-					this.gamenum=res.data.data.user.gamesPlayed
+					this.gamenum=res.data.data.user.gamesPlayed;
+					this.issex=res.data.data.user.gender;
 					if(res.data.data.user.gender==null){
 						that.haswh='sex'
 					}else if(res.data.data.user.gender==1){
@@ -122,19 +152,42 @@ export default {
 			})
 		},
 		//游戏足迹的接口
-		getrecord(){
+		getrecord(e,f,g){
 			let data ={
-				pageNum:10,
-				pageSize:10
+				pageNum:e,
+				pageSize:f
 			}
 			api.record(data).then((res)=>{
-				console.log(res);
+				if(res.data.code==200){
+					console.log(res.data.data)
+					// 请求的列表数据
+					let ishas =true;
+					let arr = res.data.data;
+					// 如果是第一页需手动置空列表
+					if (e === 1) this.dataList = [];
+					// 把请求到的数据添加到列表
+					if(arr.pageCount>=e){
+						this.dataList = this.dataList.concat(arr.dataList);
+						// 数据渲染成功后,隐藏下拉刷新的状态
+						this.$nextTick(() => {
+							g.endSuccess(arr.dataList.length);
+						});
+					}else{
+						ishas =false;
+						g.endSuccess(arr.pageSize,ishas);
+					}
+					this.datalist=res.data.data.dataList
+				}
 			}).catch((err)=>{
 				console.log(err);
 			})
 		},
 		//点击左边电话
 		gameProp(e){
+				this.isshuom=e;
+				setTimeout(()=>{
+					this.isshuom=0;
+				},1500)
 			if(e==10&&e<=this.day){
 				const zu =document.getElementsByClassName('game-prop-zu')[0];
 			zu.classList.add('animated', 'heartBeat');
@@ -157,12 +210,61 @@ export default {
 		},
 		//人物移动
 		movepeople(){
-			setInterval(()=>{
-				this.index+=30;
-				/*if(this.index<=3000){
-					this.imgy--;
-					this.drawImage();
-				}*/
+			let vocie=0;
+			this.gameProgress='forceFront'
+			if(this.yip>=68){
+				vocie=68
+			}else{
+				vocie=this.yip
+			}
+			let height =document.body.clientHeight;
+			let width=document.body.clientWidth;
+			let ifwidth=Math.tan(this.degrees*Math.PI/180)*height;//应该走的宽度
+			let ifheight=height*2.78*(vocie/68);//根据分贝走的高度
+			let movepeo =setInterval(()=>{
+				this.index+=ifheight/100;
+				this.imgx+=3*ifwidth/100;
+				this.allcanvas();
+				if(this.imgx<=0||this.imgx>=width*3-this.peopleimg.width*this.imgwidth){
+					clearInterval(movepeo);
+					this.showmodal('wrongangle')
+				}
+				//如果当前背景移动的高度大于应该跑的高度则停止移动并弹出蓄力不足
+				if(this.index>=ifheight){
+					clearInterval(movepeo);
+					this.showmodal('Insufficient');
+				}
+				if(this.index>=height*2){
+					clearInterval(movepeo);
+					let movelast=setInterval(()=>{
+						if(this.imgy>0){
+							this.imgx+=3*ifwidth/100;
+							this.imgy-=3*ifheight/100;
+							this.allcanvas();
+							if(this.imgx<=0||this.imgx>=width*3-this.peopleimg.width*this.imgwidth){
+								clearInterval(movelast);
+								this.showmodal('wrongangle');
+							}
+							 if((ifheight-2*height)*3<=0.78*height*3-this.imgy-this.peopleimg.height*this.imgheight){
+								clearInterval(movelast);
+								this.showmodal('Insufficient');
+							}
+							console.log((ifheight-2*height)*3, 0.78*height*3-this.imgy-this.peopleimg.height*this.imgheight)
+						}else{
+							clearInterval(movelast);
+							api.getPrizes().then((res)=>{
+								if(res.data.code==200){
+									this.showmodal('lookgod',res.data.data.type)
+									console.log('中奖了')
+								}else{
+									console.log(res)
+								}
+							}).catch((err)=>{
+								console.log(err)
+							})
+						}
+					},50)
+				}
 			},50)
 		},
 		//绑定长按按钮
@@ -171,32 +273,57 @@ export default {
 			let endtime = '';
 			let that = this;
 			let callgod = document.getElementsByClassName('bottom-land-xian-buttonright')[0];
+			this.iscallgod=true;
 			callgod.addEventListener('touchstart', function() {
-				starttime = new Date().getTime();
-				this.timer = setTimeout(() => {
-					//开始录音
-					that.timenum = 3;
-					let timealse = setInterval(() => {
-						if (that.timenum > 0) {
-							that.timenum--;
-						} else {
-							clearInterval(timealse);
-						}
-						console.log('倒计时中');
-					}, 1000);
-					console.log('长按开始');
-				}, 700);
+				console.log(that.isclick)
+				if(that.isclick){
+					console.log(that.isclick)
+					starttime = new Date().getTime();
+					that.timer = setTimeout(() => {
+						callgod.classList.add('animated', 'jello');
+						setTimeout(()=>{
+							callgod.classList.remove('animated', 'jello')
+						},1000)
+						//开始录音
+						// this.star();
+						that.timenum = 3;
+						console.log(that.isclick)
+						that.isclick=false;
+						let timealse = setInterval(() => {
+							if (that.timenum > 0) {
+								that.timenum--;
+							} else {
+								clearInterval(timealse);
+								/*测试*/
+								if(that.stopnum){
+									that.stopnum=false;
+									that.judgetime();
+									// that.stop();
+								}
+							}
+							console.log('倒计时中');
+						}, 1000);
+						console.log('长按开始');
+					}, 700);
+				}
+				
 			});
 			callgod.addEventListener('touchend', function() {
 				endtime = new Date().getTime();
 				if (endtime - starttime < 700) {
-					clearTimeout(this.timer);
+					clearTimeout(that.timer);
 					console.log('长按结束');
-					
 				} else {
-					//模拟直接移动
-					that.movepeople();
 					//结束录音
+					if(that.timenum>0&&that.timenum<=3){
+						/*测试*/
+						if(that.stopnum){
+							that.stopnum=false;
+							that.judgetime();
+							// that.stop();
+						}
+					}
+					console.log(that.timenum)
 					console.log('结束录音');
 				}
 			});
@@ -269,6 +396,7 @@ export default {
 						flag = true;
 					}
 				}
+				console.log(this.degrees);
 				this.pointcont.clearRect(0, 0, this.canvas.width, this.canvas.height);
 				this.drawPoint(degrees);
 				this.drawImage();
@@ -317,13 +445,27 @@ export default {
 			that.context.restore();
 		},
 		//弹出modal的内容
-		showmodal(e) {
+		showmodal(e,f) {
 			this.haswh = e;
+			this.types=f||0;
 			this.modalshow = true;
 		},
 		//关闭modal框
 		closemodal() {
-			this.modalshow = false;
+			if(this.isstartgame){
+				this.modalshow = false;
+			}else{
+				if(this.issex!=null){
+					this.haswh='start'
+				}else{
+					this.haswh='sex'
+				}
+			}
+		},
+		//替换模态框
+		chosemodal(e){
+			console.log(e)
+			this.haswh=e;
 		},
 		//确认选择男女
 		confirm(data) {
@@ -350,6 +492,8 @@ export default {
 				console.log('还剩'+this.gamenum);
 				if(this.gamenum>0){
 					api.start(types).then((res)=>{
+						if(res.data.code==200){
+							this.isstartgame=true;
 							this.closemodal();
 							this.movepoint();
 							let time = 5;
@@ -367,14 +511,15 @@ export default {
 									console.log('停止');
 								}
 							}, 1000);
+						}else{
+							this.$layer.msg('开始游戏错误，请刷新重试')
+						}
 					}).catch((err)=>{
-						console.log(err)
+						this.$layer.msg('开始游戏错误，请刷新重试')
 					})
 				}else{
 					this.$layer.msg('抱歉您的游戏次数已用完！');
 				}
-				
-				
 			}
 		},
 		// 开始录音
@@ -383,23 +528,38 @@ export default {
 		},
 		// 停止录音
 		stop() {
-			let that = this;
-			this.wx.stopRecord({
-				success: function(res) {
-					that.localId = res;
-					that.wx.uploadVoice({
-						localId: res.localId, // 需要上传的音频的本地ID，由stopRecord接口获得
-						isShowProgressTips: 1, // 默认为1，显示进度提示
-						success: function(res) {
-							that.serverId = res.serverId; // 返回音频的服务器端ID
-							console.log(res.serverId);
-							api.getVoice(res.serverId).then(res => {
-								that.yip = res;
-							});
-						}
-					});
-				}
-			});
+				this.showmodal('wait');
+				let that = this;
+				this.wx.stopRecord({
+					success: function(res) {
+						that.localId = res;
+						that.wx.uploadVoice({
+							localId: res.localId, // 需要上传的音频的本地ID，由stopRecord接口获得
+							isShowProgressTips: 1, // 默认为1，显示进度提示
+							success: function(res) {
+								that.serverId = res.serverId; // 返回音频的服务器端ID
+								console.log(res.serverId);
+								api.getVoice(res.serverId).then(res => {
+									if(res.data.code==200){
+										that.yip=res.data.data;
+										that.judgetime();
+									}
+								});
+							}
+						});
+					}
+				});
+		},
+		// 判断时间
+		judgetime(){
+			if(this.timenum==0){
+				this.closemodal();
+				this.movepeople();
+			}else{
+				setTimeout(()=>{
+					this.judgetime();
+				},1000)
+			}
 		},
 		// 上传语音
 		upload() {
@@ -444,6 +604,22 @@ export default {
 	padding-left: 20px;
 	position: fixed;
 	bottom: 50%;
+	.game-prop-fader{
+		position: relative;
+	}
+	.game-prop-shuom{
+		position: absolute;
+		right: -90px;
+		bottom: -50px;
+		width: 140px;
+		height: 75px;
+		padding:15px 10px;
+		box-sizing: border-box;
+		font-size: 16px;
+		background: url(../../static/game/callborder.png) no-repeat;
+		background-size:100% 100% ;
+		overflow: hidden;
+	}
 	.game-prop-zu {
 		width: 132px;
 		height: 99px;
