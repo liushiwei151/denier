@@ -45,7 +45,7 @@
 <script>
 import api from '@/getapi.js';
 import modal from '@/components/modal';
-	import MescrollVue from 'mescroll.js/mescroll.vue';
+import MescrollVue from 'mescroll.js/mescroll.vue';
 export default {
 	name: 'game',
 	data() {
@@ -55,7 +55,7 @@ export default {
 			//获得的奖品
 			types:0,
 			//签到的天数
-			day: null,
+			day: 220,
 			//modal弹出的内容
 			haswh: '',
 			modalshow: true,
@@ -70,6 +70,8 @@ export default {
 			xuli: 30,
 			//人物的图片对象
 			peopleimg: '',
+			//指针图片对象
+			ponitimg:'',
 			//选中是谁的图像
 			imgurl: './static/game/woman.png',
 			// 指针图片
@@ -111,6 +113,17 @@ export default {
 			fuqian:null,
 			//10秒的倒计时循环
 			lasttime:"",
+			//装备的对象
+			zqtobject:'',
+			lefticonimg:'',
+			//装备的x轴和y轴
+			leftx:0,
+			lefty:0,
+			//选中的装备图标
+			leftzb:'',
+			//装备摇摆的判断
+			zbright:true,
+			zblinetime:0,
 		};
 	},
 	inject:['isrouter'],
@@ -128,6 +141,69 @@ export default {
 		// this.movepoint();
 	},
 	methods: {
+		//添加竹蜻蜓
+		zhuqingting(e){
+			let that =this;
+			let x,y;
+			this.lefticonimg =new Image();
+			if(e==10){
+				this.lefticonimg.src='./static/game/zhuqingting.png';
+				this.leftzb=10;
+			}else if(e==20){
+				this.lefticonimg.src='./static/game/fhl.png';
+				this.leftzb=20;
+			}else if(e==30){
+				this.lefticonimg.src='./static/game/jdy.png';
+				this.leftzb=30;
+			}else{
+				
+			}
+			that.lefticonimg.onload = function() {
+				if(e==10){
+					that.lefty=-(that.lefticonimg.height*that.imgheight/2);
+					that.leftx=(that.lefticonimg.width*that.imgwidth/4);
+					that.imgy = that.canvas.height - that.imgheight * that.peopleimg.height;
+				}else if(e==20){
+					that.leftx=that.peopleimg.width*that.imgwidth/5;
+					that.lefty=that.peopleimg.height*that.imgheight*0.9;
+					that.imgy = that.canvas.height - that.imgheight * that.peopleimg.height-(that.lefticonimg.height*that.imgheight*0.8);
+				}else if(e==30){
+					that.leftx=that.peopleimg.width*that.imgwidth/5;
+					that.lefty=that.peopleimg.height*that.imgheight*0.9;
+					that.imgy = that.canvas.height - that.imgheight * that.peopleimg.height-(that.lefticonimg.height*that.imgheight*0.8);
+				}else{
+					
+				}
+				// 先清空
+				that.context.clearRect(0, 0, that.canvas.width, that.canvas.height);
+				// 再绘图
+				that.drawPoint(that.degrees);
+				that.Dottedline();
+				that.drawzhuqingting(that.leftx,that.lefty);
+				that.drawImage();
+			};
+		},
+		//绘制装备
+		drawzhuqingting(x,y){
+			let e =x||0;
+			let f =y||0;
+			let that = this;
+			if(this.lefticonimg){
+				that.zqtobject.save();
+				that.zqtobject.drawImage(
+					that.lefticonimg, //规定要使用的图像、画布或视频。
+					0,
+					0, //开始剪切的 x 坐标位置。
+					that.lefticonimg.width,
+					that.lefticonimg.height, //被剪切图像的高度。
+					that.imgx+e,
+					that.imgy+f,//在画布上放置图像的 x 、y坐标位置。
+					that.lefticonimg.width * that.imgwidth,
+					that.lefticonimg.height * that.imgheight //要使用的图像的宽度、高度
+				);
+				that.zqtobject.restore();
+			}
+		},
 		// 获得用户是否选择了性别是否有性别的接口
 		getstart(){
 			let data={
@@ -198,18 +274,21 @@ export default {
 			setTimeout(()=>{
 				zu.classList.remove('animated', 'heartBeat')
 			},1000)
+			this.zhuqingting(e);
 			}else if(e==20&&e<=this.day){
 				const feng =document.getElementsByClassName('game-prop-feng')[0];
 				feng.classList.add('animated', 'heartBeat');
 				setTimeout(()=>{
 					feng.classList.remove('animated', 'heartBeat')
 				},1000)
+				this.zhuqingting(e);
 			}else if(e==30&&e<=this.day){
 				const yun =document.getElementsByClassName('game-prop-yun')[0];
 				yun.classList.add('animated', 'heartBeat');
 				setTimeout(()=>{
 					yun.classList.remove('animated', 'heartBeat')
 				},1000)
+				this.zhuqingting(e);
 			}
 		},
 		//人物移动
@@ -423,6 +502,22 @@ export default {
 			// 先清空
 			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
 			// 再绘图
+			this.zblinetime;this.zbright;
+			if(this.lefticonimg&&this.zbright){
+				this.zblinetime+=10;
+				this.leftx+=this.zblinetime;
+				if(this.zblinetime>=this.lefticonimg.width/50){
+					this.zbright=false
+				}
+			}else if(this.lefticonimg&&!this.zbright){
+				this.zblinetime-=10;
+				this.leftx+=this.zblinetime;
+				if(this.zblinetime<=-this.lefticonimg.width/50){
+					this.zbright=true
+				}
+			}
+			console.log(this.zblinetime)
+			this.drawzhuqingting(this.leftx,this.lefty);
 			this.drawImage();
 			// this.drawPoint();
 		},
@@ -433,6 +528,7 @@ export default {
 			this.context = this.canvas.getContext('2d'); //画布显示人物
 			this.pointcont = this.canvas.getContext('2d'); //指针的画布
 			this.line =this.canvas.getContext('2d');//虚线区域
+			this.zqtobject=this.canvas.getContext('2d');
 			this.canvas.width = this.canvas.offsetWidth * 3;
 			this.canvas.height = this.canvas.offsetHeight * 3;
 			this.imgwidth = document.body.clientWidth / 750;
@@ -455,8 +551,8 @@ export default {
 			this.ponitimg.onload = function() {
 				that.imgIspoint = true;
 				that.drawPoint();
+				that.Dottedline();
 			};
-			this.Dottedline();
 		},
 		//虚线区域
 		Dottedline(){
@@ -466,13 +562,25 @@ export default {
 			　　cxt.beginPath();
 			　　cxt.setLineDash([15, 15]);
 			　　cxt.moveTo(0,-2*this.canvas.height);
-			　　cxt.lineTo(this.canvas.width/2, this.canvas.height-this.peopleimg.height*this.imgheight);
+			if(this.leftzb==10){
+				cxt.lineTo(this.canvas.width/2,this.imgy+this.lefty);
+			}else if(this.leftzb==20||this.leftzb==30){
+				cxt.lineTo(this.canvas.width/2,this.imgy);
+			}else{
+				cxt.lineTo(this.canvas.width/2, this.canvas.height-this.peopleimg.height*this.imgheight);
+			}
 			　　cxt.stroke();
 				cxt.beginPath();
 			　　cxt.setLineDash([15, 15]);
-			　　cxt.moveTo(this.canvas.width,-2*this.canvas.height);
-			　　cxt.lineTo(this.canvas.width/2, this.canvas.height-this.peopleimg.height*this.imgheight);
-			　　cxt.stroke();
+			cxt.moveTo(this.canvas.width,-2*this.canvas.height);
+			if(this.leftzb==10){
+				cxt.lineTo(this.canvas.width/2,this.imgy+this.lefty);
+			}else if(this.leftzb==20||this.leftzb==30){
+				cxt.lineTo(this.canvas.width/2,this.imgy);
+			}else{
+				cxt.lineTo(this.canvas.width/2, this.canvas.height-this.peopleimg.height*this.imgheight);
+			}
+				cxt.stroke();
 				cxt.moveTo( 300, 300 );
 				cxt.font = '50px "微软雅黑"';           //设置字体
 			    cxt.fillStyle = "black";               //设置填充颜色为紫色
@@ -490,12 +598,12 @@ export default {
 			let flag = this.flag;
 			this.movep = setInterval(() => {
 				if (flag) {
-					degrees += 1;
+					degrees += 2;
 					if (degrees >= 90) {
 						flag = false;
 					}
 				} else {
-					degrees -= 1;
+					degrees -= 2;
 					if (degrees <= -90) {
 						flag = true;
 					}
@@ -503,8 +611,9 @@ export default {
 				console.log(this.degrees);
 				this.pointcont.clearRect(0, 0, this.canvas.width, this.canvas.height);
 				this.drawPoint(degrees);
-				this.drawImage();
 				this.Dottedline();
+				this.drawzhuqingting(this.leftx,this.lefty);
+				this.drawImage();
 				this.flag = flag;
 				this.degrees = degrees;
 			}, 10);
@@ -514,7 +623,12 @@ export default {
 			let num = e || 0;
 			let that = this;
 			that.pointcont.save();
-			that.pointcont.translate(this.canvas.width / 2, this.canvas.height - this.peopleimg.height * this.imgheight);
+			if(this.leftzb==10){
+				that.pointcont.translate(this.canvas.width / 2, this.imgy+this.lefty);
+			}else{
+				that.pointcont.translate(this.canvas.width / 2, this.imgy);
+			}
+			// that.pointcont.translate(this.canvas.width / 2, this.canvas.height - this.peopleimg.height * this.imgheight);
 			that.pointcont.rotate((Math.PI / 180) * num);
 			that.pointcont.drawImage(
 				that.ponitimg,
@@ -532,9 +646,6 @@ export default {
 		// 调用人物图片
 		drawImage() {
 			let that = this;
-			// this.context.save();
-			// this.context.translate((that.canvas.width - that.imgwidth * 147) / 2+147,that.canvas.height - that.imgheight *283);
-			// this.context.rotate(Math.PI/16)
 			that.context.save();
 			this.context.drawImage(
 				that.peopleimg, //规定要使用的图像、画布或视频。
