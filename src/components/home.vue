@@ -5,7 +5,7 @@
 			<div class="money">
 				<div class="MoneyGod" @click="!isguanzhu ? (isshow = false) : goto('MoneyGod')"><div class="cursor"></div></div>
 				<div class="Fortunes" @click="!isguanzhu ? (isshow = false) : goto('Fortunes')"></div>
-				<div class="callMoney" @click="onlygoto()"></div>
+				<div class="callMoney" @click="!isguanzhu ? (isshow = false) : goto('game')"></div>
 			</div>
 		</div>
 		<div class="modal" :class="{ show: !isshow }">
@@ -31,6 +31,7 @@ export default {
 	},
 	inject: ['isloadingshow'],
 	mounted() {
+		console.log(this.$route.path,2)
 		this.isloadingshow(true);
 		let that = this;
 		let datas = {
@@ -38,6 +39,7 @@ export default {
 		};
 		api.jsSign(datas).then(res => {
 			if (res.data.code == 200) {
+				localStorage.setItem('jsSign',JSON.stringify(res.data.data));
 				that.wx.config({
 					debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
 					appId: res.data.data.appid, // 必填，公众号的唯一标识
@@ -175,7 +177,7 @@ export default {
 			// this.$layer.msg('活动时间为1月1日- 2月9日，敬请期待');
 			console.log('正式');
 			//测试
-			this.$router.push('game');console.log('测试')
+			this.$router.push('game');
 		}
 	}
 };

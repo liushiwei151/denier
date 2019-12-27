@@ -6,7 +6,7 @@
 				<div class="bottom-land-xian" >
 					<div
 						class="bottom-land-xian-buttonleft"
-						:style="{ backgroundImage: 'url(../../static/game/' + leftbutton + '.png)' }"
+						:style="{ backgroundImage: 'url(./static/game/' + leftbutton + '.png)' }"
 						@click="truemz"
 					></div>
 					<div class="bottom-land-xian-buttonright" :style="{filter:iscallgod?'':'grayscale(100%)'}"></div>
@@ -38,7 +38,7 @@
 			<div class="xulicao"><div :style="{ width: yip + '%' }"></div></div>
 		</div>
 		<div class="lasttime" v-if="gameProgress == 'forceAfter'">倒计时：{{ timenum }}</div>
-		<modal :type="types" :datalist="dataList" :haswhat="haswh" :isshow="modalshow" @getrecord="getrecord" @chosemodal="chosemodal" @closemodal="closemodal" @confirm="confirm"></modal>
+		<modal :fuqian="fuqian" :type="types" :datalist="dataList" :haswhat="haswh" :isshow="modalshow" @getrecord="getrecord" @chosemodal="chosemodal" @closemodal="closemodal" @confirm="confirm"></modal>
 	</div>
 </template>
 
@@ -63,7 +63,7 @@ export default {
 			localId: '',
 			serverId: '',
 			//返回的音频
-			yip: 0,
+			yip: 56,
 			voice: '',
 			index: 0,
 			//返回的蓄力值
@@ -71,9 +71,9 @@ export default {
 			//人物的图片对象
 			peopleimg: '',
 			//选中是谁的图像
-			imgurl: '/static/game/woman.png',
+			imgurl: './static/game/woman.png',
 			// 指针图片
-			pointimg: '/static/game/point.png',
+			pointimg: './static/game/point.png',
 			imgIsLoaded: false, //人物图片是否加载完成;
 			imgIspoint: false, //指针图片是否加载完成
 			//canvas对象
@@ -107,8 +107,13 @@ export default {
 			dataList:'',
 			//限定stop只触发一次
 			stopnum:true,
+			//福签号码
+			fuqian:null,
+			//10秒的倒计时循环
+			lasttime:"",
 		};
 	},
+	inject:['isrouter'],
 	components: {
 		modal,
 		MescrollVue
@@ -118,12 +123,11 @@ export default {
 		this.getstart();
 	},
 	mounted() {
-		this.getrecord();
+		// this.getrecord();
 		this.loadImg();
 		// this.movepoint();
 	},
 	methods: {
-		// 接口
 		// 获得用户是否选择了性别是否有性别的接口
 		getstart(){
 			let data={
@@ -138,11 +142,11 @@ export default {
 					if(res.data.data.user.gender==null){
 						that.haswh='sex'
 					}else if(res.data.data.user.gender==1){
-						that.imgurl = '/static/game/man.png';
+						that.imgurl = './static/game/man.png';
 						this.loadImg();
 						that.haswh='start';
 					}else if(res.data.data.user.gender==2){
-						that.imgurl = '/static/game/woman.png';
+						that.imgurl = './static/game/woman.png';
 						this.loadImg();
 						that.haswh='start';
 					}
@@ -254,7 +258,10 @@ export default {
 							clearInterval(movelast);
 							api.getPrizes().then((res)=>{
 								if(res.data.code==200){
-									this.showmodal('lookgod',res.data.data.type)
+									this.showmodal('lookgod',res.data.data.type);
+									if(res.data.data.type==1){
+										this.fuqian=res.data.data.blessingRecordId;
+									}
 									console.log('中奖了')
 								}else{
 									console.log(res)
@@ -284,6 +291,8 @@ export default {
 						setTimeout(()=>{
 							callgod.classList.remove('animated', 'jello')
 						},1000)
+						clearInterval(that.lasttime);
+						that.leftbutton = 'ReAiming';
 						//开始录音
 						/*测试*/
 						that.star();
@@ -331,13 +340,77 @@ export default {
 				}
 			});
 		},
+		//解除绑定长按按钮
+		retouch(){
+			this.iscallgod=false;
+			let callgod = document.getElementsByClassName('bottom-land-xian-buttonright')[0];
+			callgod.removeEventListener('touchstart', function() {
+					console.log(that.isclick)
+					if(that.isclick){
+						console.log(that.isclick)
+						starttime = new Date().getTime();
+						that.timer = setTimeout(() => {
+							callgod.classList.add('animated', 'jello');
+							setTimeout(()=>{
+								callgod.classList.remove('animated', 'jello')
+							},1000)
+							clearInterval(that.lasttime);
+							//开始录音
+							/*测试*/
+							that.star();
+							/*测试*/
+							that.timenum = 3;
+							that.isclick=false;
+							let timealse = setInterval(() => {
+								if (that.timenum > 0) {
+									that.timenum--;
+								} else {
+									clearInterval(timealse);
+									/*测试*/
+									if(that.stopnum){
+										that.stopnum=false;
+										/*测试*/
+										// that.judgetime();
+										that.stop();
+										/*测试*/
+									}
+								}
+							}, 1000);
+							console.log('长按开始');
+						}, 700);
+					}
+					
+				});
+				callgod.removeEventListener('touchend', function() {
+					endtime = new Date().getTime();
+					if (endtime - starttime < 700) {
+						clearTimeout(that.timer);
+						console.log('长按结束');
+					} else {
+						//结束录音
+						if(that.timenum>0&&that.timenum<=3){
+							if(that.stopnum){
+								that.stopnum=false;
+								/*测试*/
+								// that.judgetime();
+								that.stop();
+								/*测试*/
+							}
+						}
+						console.log(that.timenum)
+						console.log('结束录音');
+					}
+				});
+		},
 		// 确认瞄准
 		truemz() {
 			if (this.leftbutton == 'ConfirmAiming') {
 				this.leftbutton = 'ReAiming';
+				this.touch();
 				clearInterval(this.movep);
 			} else if (this.leftbutton == 'ReAiming') {
 				this.leftbutton = 'ConfirmAiming';
+				this.retouch();
 				this.movepoint();
 			} else {
 				return;
@@ -417,12 +490,12 @@ export default {
 			let flag = this.flag;
 			this.movep = setInterval(() => {
 				if (flag) {
-					degrees += 2;
+					degrees += 1;
 					if (degrees >= 90) {
 						flag = false;
 					}
 				} else {
-					degrees -= 2;
+					degrees -= 1;
 					if (degrees <= -90) {
 						flag = true;
 					}
@@ -434,7 +507,7 @@ export default {
 				this.Dottedline();
 				this.flag = flag;
 				this.degrees = degrees;
-			}, 50);
+			}, 10);
 		},
 		// 调用指针
 		drawPoint(e) {
@@ -483,7 +556,7 @@ export default {
 			this.modalshow = true;
 		},
 		//关闭modal框
-		closemodal() {
+		closemodal(e) {
 			if(this.isstartgame){
 				this.modalshow = false;
 			}else{
@@ -492,6 +565,10 @@ export default {
 				}else{
 					this.haswh='sex'
 				}
+			}
+			if(e=="shua"){
+				// this.$router.push('/game');
+				this.isrouter();
 			}
 		},
 		//替换模态框
@@ -502,7 +579,7 @@ export default {
 		//确认选择男女
 		confirm(data) {
 			if (data == 'man' || data == 'woman') {
-				this.imgurl = '/static/game/' + data + '.png';
+				this.imgurl = './static/game/' + data + '.png';
 				let datas ={
 					gender:data=='man'?1:2
 				}
@@ -529,7 +606,7 @@ export default {
 							this.closemodal();
 							this.movepoint();
 							let time = 10;
-							let lasttime = setInterval(() => {
+							this.lasttime = setInterval(() => {
 								time--;
 								if (time >= 1 && time <= 9) {
 									this.timenum = '0' + time;
@@ -539,7 +616,7 @@ export default {
 									clearInterval(this.movep);
 									//绑定长按按钮
 									this.touch();
-									clearInterval(lasttime);
+									clearInterval(this.lasttime);
 									console.log('停止');
 								}
 							}, 1000);

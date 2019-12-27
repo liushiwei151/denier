@@ -69,7 +69,7 @@ const share =()=>{
 }
 //奖品的接口
 const getPrizes=()=>{
-	return axios.post('yq/shout/getPrizes')
+	return axios.post('/yq/shout/getPrizes')
 }
 export default {
 	subscribe,

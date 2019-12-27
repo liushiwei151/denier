@@ -5,15 +5,15 @@
 		<!-- 选择性别 -->
 		<div class="chose" v-if="haswhat == 'sex'">
 			<div class="chose-people">
-				<div><img src="/static/game/nan.png" alt="男性" @click="confirm('man')" /></div>
+				<div><img src="../../static/game/nan.png" alt="男性" @click="confirm('man')" /></div>
 			</div>
 			<div class="chose-people">
-				<div><img src="/static/game/nv.png" alt="女性" @click="confirm('woman')" /></div>
+				<div><img src="../../static/game/nv.png" alt="女性" @click="confirm('woman')" /></div>
 			</div>
 		</div>
 		<!-- 开始游戏 -->
 		<div v-if="haswhat == 'start'">
-			<div class="startgame" @click="confirm('startgame')"><img src="/static/game/startgame.png" alt="开始游戏" /></div>
+			<div class="startgame" @click="confirm('startgame')"><img src="../../static/game/startgame.png" alt="开始游戏" /></div>
 		</div>
 		<!-- 活动规则 -->
 		<div v-if="haswhat == 'actrule'">
@@ -47,7 +47,7 @@
 				<p>您的"财神到"蓄力还不够哦，</p>
 				<p>这次没见到财神，还请再接再历哦！</p>
 				<div class="moneygod"></div>
-				<div class="closegame" @click="close"><div></div></div>
+				<div class="closegame" @click="close('shua')"><div></div></div>
 			</div>
 		</div>
 		<!-- 角度偏出 -->
@@ -57,7 +57,7 @@
 				<p>与财神插肩而过。</p>
 				<p>对准推荐瞄准区更容易见到财神哦！</p>
 				<div class="wrongangle"></div>
-				<div class="closegame" @click="close"><div></div></div>
+				<div class="closegame" @click="close('shua')"><div></div></div>
 			</div>
 		</div>
 		<!-- 中奖 -->
@@ -68,7 +68,7 @@
 					<p>并收获了一支大吉大利财神签！</p>
 					<p>
 						签号：
-						<span class="textred strong">{{ qianh }}</span>
+						<span class="textred strong">{{ fuqian }}</span>
 					</p>
 				</div>
 				<div v-if="type==2">
@@ -81,7 +81,7 @@
 					<p>并收获了楼楼周边！</p>
 				</div>
 				<div class="lookgod"></div>
-				<div class="closegame" @click="close"><div></div></div>
+				<div class="closegame" @click="close('shua')"><div></div></div>
 			</div>
 		</div>
 		<!-- 财运足迹 -->
@@ -99,7 +99,7 @@
 							<span>{{ item.insertTime }}</span>
 						</div>
 						<div>
-							<span>{{ item.prizeName }}</span>
+							<span>{{ item.prizeName }}{{item.blessingRecordId}}</span>
 						</div>
 					</li>
 					<!-- 虚线充位置 -->
@@ -129,7 +129,6 @@ export default {
 	name: 'modal',
 	data() {
 		return {
-			qianh: null,
 			// 刷新组件的属性
 			mescroll: null, // mescroll实例对象
 			mescrollUp: {
@@ -173,6 +172,9 @@ export default {
 		},
 		type:{
 			default:0
+		},
+		fuqian:{
+			default:null
 		}
 	},
 	computed:{
@@ -200,8 +202,8 @@ export default {
 		getrecord(e,f,g){
 			this.$emit('getrecord',e,f,g)
 		},
-		close() {
-			this.$emit('closemodal');
+		close(m) {
+			this.$emit('closemodal',m);
 		},
 		//选中男女
 		confirm(e) {
