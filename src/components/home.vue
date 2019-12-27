@@ -91,7 +91,8 @@ export default {
 							// 用户点击了分享后执行的回调函数
 							api.share().then((res)=>{
 								if(res.data.code==200){
-									that.$layer.msg('分享成功')
+									that.$layer.msg('分享成功');
+									window.location.reload()
 								}else{
 									that.$layer.msg('分享失败')
 								}
@@ -112,7 +113,8 @@ export default {
 					    // 用户点击了分享后执行的回调函数
 						api.share().then((res)=>{
 							if(res.data.code==200){
-								that.$layer.msg('分享成功')
+								that.$layer.msg('分享成功');
+								window.location.reload();
 							}else{
 								that.$layer.msg('分享失败')
 							}

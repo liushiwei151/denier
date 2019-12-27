@@ -9,7 +9,7 @@
 						:style="{ backgroundImage: 'url(./static/game/' + leftbutton + '.png)' }"
 						@click="truemz"
 					></div>
-					<div class="bottom-land-xian-buttonright" :style="{filter:iscallgod?'':'grayscale(100%)'}"></div>
+					<div  class="bottom-land-xian-buttonright" :style="{filter:iscallgod?'':'grayscale(100%)'}"></div>
 				</div>
 			</div>
 		</div>
@@ -66,8 +66,6 @@ export default {
 			yip: 56,
 			voice: '',
 			index: 0,
-			//返回的蓄力值
-			xuli: 30,
 			//人物的图片对象
 			peopleimg: '',
 			//指针图片对象
@@ -434,6 +432,7 @@ export default {
 								callgod.classList.remove('animated', 'jello')
 							},1000)
 							clearInterval(that.lasttime);
+							that.leftbutton = 'ReAiming';
 							//开始录音
 							/*测试*/
 							that.star();
@@ -598,12 +597,12 @@ export default {
 			let flag = this.flag;
 			this.movep = setInterval(() => {
 				if (flag) {
-					degrees += 2;
+					degrees += 1;
 					if (degrees >= 90) {
 						flag = false;
 					}
 				} else {
-					degrees -= 2;
+					degrees -= 1;
 					if (degrees <= -90) {
 						flag = true;
 					}
@@ -678,8 +677,9 @@ export default {
 				}
 			}
 			if(e=="shua"){
-				// this.$router.push('/game');
-				this.isrouter();
+				// this.$router.push('/game');//不兼容
+				// this.isrouter();//无效
+				window.location.reload();
 			}
 		},
 		//替换模态框
@@ -795,6 +795,17 @@ export default {
 };
 </script>
 <style scoped lang="less">
+*{   
+    -webkit-touch-callout:none;  /*系统默认菜单被禁用*/   
+    -webkit-user-select:none; /*webkit浏览器*/   
+    -khtml-user-select:none; /*早期浏览器*/   
+    -moz-user-select:none;/*火狐*/   
+    -ms-user-select:none; /*IE10*/   
+    user-select:none;   
+} 
+input {      
+     -webkit-user-select:auto; /*webkit浏览器*/     
+} 
 .game-peoples {
 	width: 750px;
 	height: 78%;
