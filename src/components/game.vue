@@ -124,6 +124,8 @@ export default {
 			zblinetime:0,
 			// 只准点一次开始游戏
 			isgame:true,
+			//后台需要的值
+			gameRecordId:'',
 		};
 	},
 	inject:['isrouter'],
@@ -134,6 +136,7 @@ export default {
 	created() {
 		this.haswh='wait';
 		this.getstart();
+		this.openweb();
 	},
 	mounted() {
 		// this.getrecord();
@@ -335,6 +338,7 @@ export default {
 							console.log((ifheight-2*height)*3, 0.78*height*3-this.imgy-this.peopleimg.height*this.imgheight)
 						}else{
 							clearInterval(movelast);
+							this.showmodal('wait');
 							api.getPrizes().then((res)=>{
 								if(res.data.code==200){
 									this.showmodal('lookgod',res.data.data.type);
@@ -343,10 +347,10 @@ export default {
 									}
 									console.log('中奖了')
 								}else{
-									console.log(res)
+									this.$layer.msg('奖品获取失败（!200）');
 								}
 							}).catch((err)=>{
-								console.log(err)
+								this.$layer.msg('奖品获取失败');
 							})
 						}
 					},50)
@@ -452,7 +456,7 @@ export default {
 		allcanvas() {
 			// 先清空
 			this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-			// 再绘图
+			// 再绘图 以下是抖动效果
 			this.zblinetime;this.zbright;
 			if(this.lefticonimg&&this.zbright){
 				this.zblinetime+=10;
@@ -467,7 +471,6 @@ export default {
 					this.zbright=true
 				}
 			}
-			console.log(this.zblinetime)
 			this.drawzhuqingting(this.leftx,this.lefty);
 			this.drawImage();
 			// this.drawPoint();
@@ -665,6 +668,7 @@ export default {
 				if(this.gamenum>0){
 					api.start(types).then((res)=>{
 						if(res.data.code==200){
+							this.gameRecordId=res.data.data.gameRecordId;
 							this.isstartgame=true;
 							this.closemodal();
 							this.movepoint();
@@ -694,6 +698,18 @@ export default {
 				}
 			}
 		},
+		//在进入页面时录一段音已确定用户有无录音权限
+		openweb(){
+			this.wx.startRecord();
+			setTimeout(()=>{
+				this.wx.stopRecord({
+					success:function(res){
+						console.log('录音已授权')
+					}
+				})
+			},1000)
+			
+		},
 		// 开始录音
 		star() {
 			this.wx.startRecord();
@@ -710,12 +726,19 @@ export default {
 							isShowProgressTips: 1, // 默认为1，显示进度提示
 							success: function(res) {
 								that.serverId = res.serverId; // 返回音频的服务器端ID
-								console.log(res.serverId);
-								api.getVoice(res.serverId).then(res => {
+								let data={
+									id:res.serverId,
+									gameRecordId:that.gameRecordId
+								}
+								api.getVoice(data).then(res => {
 									if(res.data.code==200){
 										that.yip=res.data.data;
 										that.judgetime();
+									}else{
+										that.$layer.msg('上传录音失败');
 									}
+								}).catch((err)=>{
+									that.$layer.msg('上传录音失败');
 								});
 							}
 						});
@@ -724,9 +747,13 @@ export default {
 		},
 		// 判断时间
 		judgetime(){
+			let that =this;
 			if(this.timenum==0){
 				this.closemodal();
-				this.movepeople();
+				 this.peopleimg.src =this.imgurl.slice(0,-4)+'end.png';
+				 this.peopleimg.onload=function(){
+					 that.movepeople();
+				 }
 			}else{
 				setTimeout(()=>{
 					this.judgetime();

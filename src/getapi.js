@@ -1,6 +1,6 @@
 import axios from 'axios'
 import qs from 'qs'
-// axios.defaults.timeout = 10000; //响应时间
+// axios.defaults.timeout = 3000; //响应时间
  // axios.defaults.baseURL = 'http://192.168.2.118:9100';   //配置接口地址
 axios.defaults.withCredentials = true;
 
@@ -42,10 +42,11 @@ const jsSign =(url)=>{
 	})
 }
 //测试下载音频接口
-const getVoice =(id)=>{
+const getVoice =(data)=>{
 	return axios.get('/yq/shout/getVoice',{
 		params:{
-			mediaId:id
+			mediaId:data.id,
+			gameRecordId:data.gameRecordId
 		}
 	})
 }
