@@ -371,7 +371,7 @@ export default {
 						callgod.classList.remove('animated', 'jello')
 					},1000)
 					clearInterval(that.lasttime);
-					that.leftbutton = 'ReAiming';
+					that.leftbutton = 're';
 					//开始录音
 					/*测试*/
 					that.star();
@@ -408,7 +408,7 @@ export default {
 				console.log('长按结束');
 			} else {
 				//结束录音
-				if(that.timenum>0&&that.timenum<=3){
+				if(that.timenum>=0&&that.timenum<=3){
 					if(that.stopnum){
 						that.stopnum=false;
 						/*测试*/
@@ -716,7 +716,6 @@ export default {
 		},
 		// 停止录音
 		stop() {
-				this.showmodal('wait');
 				let that = this;
 				this.wx.stopRecord({
 					success: function(res) {
@@ -742,6 +741,9 @@ export default {
 								});
 							}
 						});
+					},
+					cancel:function(err){
+						that.$layer.msg('微信接口报错！')
 					}
 				});
 		},
