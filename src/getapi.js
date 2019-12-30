@@ -72,6 +72,10 @@ const share =()=>{
 const getPrizes=()=>{
 	return axios.post('/yq/shout/getPrizes')
 }
+//当前时间戳
+const getCurTime=()=>{
+	return axios.get('/yq/getCurTime')
+}
 export default {
 	subscribe,
 	fortuneSign,
@@ -83,5 +87,6 @@ export default {
 	updateGender,
 	record,
 	share,
-	getPrizes
+	getPrizes,
+	getCurTime
 }

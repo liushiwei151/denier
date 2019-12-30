@@ -32,9 +32,8 @@
 				</p>
 				<p>
 					<span class="strong">4.游戏奖励:</span>
-					成功见到财神后的楼主们便可获得惊喜奖励，包括大吉大利财神签、楼币、超值福袋，海量楼楼周边等大波好礼;
+					成功见到财神后便可获得惊喜奖励，包括大吉大利财神签、楼币、财神宝盒，海量楼楼周边等大波好礼！
 				</p>
-				<p>5.点击页面上的“财运足迹”即可查看自己的奖品记录。</p>
 			</div>
 			<div class="closegame" @click="close"><div></div></div>
 		</div>
@@ -210,7 +209,7 @@ img {
 	height: 100%;
 }
 .strong {
-	font-weight: 600;
+	font-weight: 700;
 }
 .textred {
 	color: rgb(199, 49, 49);

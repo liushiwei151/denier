@@ -18,14 +18,30 @@ export default {
 	data() {
 		return {
 			isshow: false,
-			isrouters:true
+			isrouters:true,
+			share:''
 		};
 	},
-	mounted() {
-		 // this.$router.push('/');
+	created() {
 		if(this.$route.path!='/'){
-			this.getwx();	
-			console.log(123)
+			this.isloadingshow(true);
+			api.getCurTime().then((res)=>{
+				if(res.data.code===200){
+					let NowTime=res.data.data;
+					if(NowTime>=1579190400000){//当前时间大于1-17
+						this.share='小年财运旺，扫码幸运翻倍！';
+					}else if(NowTime>=1579795200000){//1-24
+						this.share='新春财运当头，扫码赢财神宝盒！';
+					}else if(NowTime>=1580572800000){//2-2
+						this.share='佳节码上有好礼，扫码财运滚滚来！';
+					}
+					this.getwx();
+				}else{
+					this.$layer.msg('获取当前时间失败,请刷新重试');
+				}
+			}).catch((err)=>{
+				this.$layer.msg('获取当前时间失败,请刷新重试');
+			})
 		}
 	},
 	methods: {
@@ -40,11 +56,9 @@ export default {
 		getwx() {
 			let that =this;
 			if (localStorage.getItem('jsSign')) {
-				this.isloadingshow(true);
 				let jsSign =JSON.parse(localStorage.getItem('jsSign'));
 				this.wxsdk(jsSign);
 			} else {
-				this.isloadingshow(true);
 				let datas = {
 					url: location.href.split('#')[0]
 				};
@@ -88,8 +102,8 @@ export default {
 			that.wx.ready(function() {
 				//发送给朋友
 				that.wx.updateAppMessageShareData({
-					title: '乐享黄鹤楼，共度中支年', // 分享标题
-					desc: '码上发财！圣诞扫码好运来！', // 分享描述
+					title: '共享黄鹤楼，乐度中支年', // 分享标题
+					desc: that.share, // 分享描述
 					link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
 					imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
 					success: function() {
@@ -98,7 +112,7 @@ export default {
 				});
 				//分享朋友圈
 				that.wx.updateTimelineShareData({
-					title: '乐享黄鹤楼，共度中支年', // 分享标题
+					title: '共享黄鹤楼，乐度中支年', // 分享标题
 					link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
 					imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
 					success: function() {
@@ -109,7 +123,7 @@ export default {
 				console.log('开始获取坐标接口');
 				// 分享朋友圈回调
 				that.wx.onMenuShareTimeline({
-					title: '乐享黄鹤楼，共度中支年', // 分享标题
+					title: '共享黄鹤楼，乐度中支年', // 分享标题
 					link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
 					imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
 					success: function() {
@@ -129,8 +143,8 @@ export default {
 				});
 				// 分享朋友回调
 				that.wx.onMenuShareAppMessage({
-					title: '乐享黄鹤楼，共度中支年', // 分享标题
-					desc: '码上发财！圣诞扫码好运来！', // 分享描述
+					title: '共享黄鹤楼，乐度中支年', // 分享标题
+					desc: that.share, // 分享描述
 					link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
 					imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
 					type: '', // 分享类型,music、video或link，不填默认为link

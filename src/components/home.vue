@@ -1,6 +1,6 @@
 <template>
 	<div class="box">
-		<div class="home">
+		<div class="home" :style="{backgroundImage:'url(./static/homepagebg'+homepage+'.png)'}">
 			<div class="rulebutton" @click="goto('rule')"></div>
 			<div class="money">
 				<div class="MoneyGod" @click="!isguanzhu ? (isshow = false) : goto('MoneyGod')"><div class="cursor"></div></div>
@@ -26,150 +26,179 @@ export default {
 			num: 100,
 			isshow: true,
 			//是否关注了
-			isguanzhu: ''
+			isguanzhu: '',
+			// 初始页面
+			homepage:2,
+			// 分享描述
+			share:'2020财运“码上爆棚”，喊财神赢大礼！'
 		};
 	},
 	inject: ['isloadingshow'],
+	created() {
+		api.getCurTime().then((res)=>{
+			if(res.data.code===200){
+				console.log(res.data.data);
+				let NowTime=res.data.data;
+				if(NowTime>=1579190400000){//当前时间大于1-17
+					this.homepage=3;
+					this.share='小年财运旺，扫码幸运翻倍！';
+				}else if(NowTime>=1579795200000){//1-24
+					this.homepage=4;
+					this.share='新春财运当头，扫码赢财神宝盒！';
+				}else if(NowTime>=1580572800000){//2-2
+					this.homepage=5;
+					this.share='佳节码上有好礼，扫码财运滚滚来！';
+				}
+				this.getwx(this.share);
+			}else{
+				this.$layer.msg('获取当前时间失败,请刷新重试');
+			}
+		}).catch((err)=>{
+			this.$layer.msg('获取当前时间失败,请刷新重试');
+		})
+	},
 	mounted() {
-		console.log(this.$route.path,2)
-		this.isloadingshow(true);
-		let that = this;
-		let datas = {
-			url: location.href.split('#')[0]
-		};
-		api.jsSign(datas).then(res => {
-			if (res.data.code == 200) {
-				localStorage.setItem('jsSign',JSON.stringify(res.data.data));
-				that.wx.config({
-					debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
-					appId: res.data.data.appid, // 必填，公众号的唯一标识
-					timestamp: res.data.data.timestamp, // 必填，生成签名的时间戳
-					nonceStr: res.data.data.nonceStr, // 必填，生成签名的随机串
-					signature: res.data.data.signature, // 必填，签名
-					jsApiList: [
-						'getLocation',
-						'startRecord',
-						'stopRecord',
-						'playVoice',
-						'uploadVoice',
-						'updateAppMessageShareData',
-						'updateTimelineShareData',
-						'onMenuShareTimeline',
-						'onMenuShareAppMessage'
-					] // 必填，需要使用的JS接口列表
-				});
-				//测试
-				let url ='http://qrhhl.yunyutian.cn/huanghelou1916-center/wx/gCode?name=toYq'
-				//正式
-				// let url = 'https://wx.hhl1916.com/huanghelou1916-center/wx/gCode?name=toYq';
-				that.wx.ready(function() {
-					//发送给朋友
-					that.wx.updateAppMessageShareData({
-						title: '乐享黄鹤楼，共度中支年', // 分享标题
-						desc: '码上发财！圣诞扫码好运来！', // 分享描述
-						link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-						imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
-						success: function() {
-							console.log('分享设置成功');
-						}
+		
+	},
+	methods: {
+		getwx(e){
+			this.isloadingshow(true);
+			let that = this;
+			let datas = {
+				url: location.href.split('#')[0]
+			};
+			api.jsSign(datas).then(res => {
+				if (res.data.code == 200) {
+					localStorage.setItem('jsSign',JSON.stringify(res.data.data));
+					that.wx.config({
+						debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+						appId: res.data.data.appid, // 必填，公众号的唯一标识
+						timestamp: res.data.data.timestamp, // 必填，生成签名的时间戳
+						nonceStr: res.data.data.nonceStr, // 必填，生成签名的随机串
+						signature: res.data.data.signature, // 必填，签名
+						jsApiList: [
+							'getLocation',
+							'startRecord',
+							'stopRecord',
+							'playVoice',
+							'uploadVoice',
+							'updateAppMessageShareData',
+							'updateTimelineShareData',
+							'onMenuShareTimeline',
+							'onMenuShareAppMessage'
+						] // 必填，需要使用的JS接口列表
 					});
-					//分享朋友圈
-					that.wx.updateTimelineShareData({
-						title: '乐享黄鹤楼，共度中支年', // 分享标题
-						link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-						imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
-						success: function() {
-							// 设置成功
-							console.log('分享朋友圈设置成功');
-						}
-					});
-					console.log('开始获取坐标接口');
-					// 分享朋友圈回调
-					that.wx.onMenuShareTimeline({
-						title: '乐享黄鹤楼，共度中支年', // 分享标题
-						link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-						imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
-						success: function() {
-							// 用户点击了分享后执行的回调函数
+					//测试
+					let url ='http://qrhhl.yunyutian.cn/huanghelou1916-center/wx/gCode?name=toYq'
+					//正式
+					// let url = 'https://wx.hhl1916.com/huanghelou1916-center/wx/gCode?name=toYq';
+					that.wx.ready(function() {
+						//发送给朋友
+						that.wx.updateAppMessageShareData({
+							title: '共享黄鹤楼，乐度中支年', // 分享标题
+							desc: e, // 分享描述
+							link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+							imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
+							success: function() {
+								console.log('分享设置成功');
+							}
+						});
+						//分享朋友圈
+						that.wx.updateTimelineShareData({
+							title: '共享黄鹤楼，乐度中支年', // 分享标题
+							link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+							imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
+							success: function() {
+								// 设置成功
+								console.log('分享朋友圈设置成功');
+							}
+						});
+						console.log('开始获取坐标接口');
+						// 分享朋友圈回调
+						that.wx.onMenuShareTimeline({
+							title: '共享黄鹤楼，乐度中支年', // 分享标题
+							link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+							imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
+							success: function() {
+								// 用户点击了分享后执行的回调函数
+								api.share().then((res)=>{
+									if(res.data.code==200){
+										that.$layer.msg('分享成功');
+										window.location.reload()
+									}else{
+										that.$layer.msg('分享失败')
+									}
+								}).catch((err)=>{
+									that.$layer.msg('服务器链接失败')
+								})
+							}
+						});
+						// 分享朋友回调
+						that.wx.onMenuShareAppMessage({
+						  title: '共享黄鹤楼，乐度中支年', // 分享标题
+						  desc: e, // 分享描述
+						  link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
+						  imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
+						  type: '', // 分享类型,music、video或link，不填默认为link
+						  dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
+						  success: function () {
+						    // 用户点击了分享后执行的回调函数
 							api.share().then((res)=>{
 								if(res.data.code==200){
 									that.$layer.msg('分享成功');
-									window.location.reload()
+									window.location.reload();
 								}else{
 									that.$layer.msg('分享失败')
 								}
 							}).catch((err)=>{
 								that.$layer.msg('服务器链接失败')
 							})
-						}
-					});
-					// 分享朋友回调
-					that.wx.onMenuShareAppMessage({
-					  title: '乐享黄鹤楼，共度中支年', // 分享标题
-					  desc: '码上发财！圣诞扫码好运来！', // 分享描述
-					  link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
-					  imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
-					  type: '', // 分享类型,music、video或link，不填默认为link
-					  dataUrl: '', // 如果type是music或video，则要提供数据链接，默认为空
-					  success: function () {
-					    // 用户点击了分享后执行的回调函数
-						api.share().then((res)=>{
-							if(res.data.code==200){
-								that.$layer.msg('分享成功');
-								window.location.reload();
-							}else{
-								that.$layer.msg('分享失败')
-							}
-						}).catch((err)=>{
-							that.$layer.msg('服务器链接失败')
-						})
-					  }
-					});
-						that.wx.getLocation({
-							type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
-							success: function(res) {
-								console.log('获取结束');
-								var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
-								var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
-								var speed = res.speed; // 速度，以米/每秒计
-								var accuracy = res.accuracy; // 位置精度
-								let data = {
-									latitude: latitude || 0,
-									longitude: longitude || 0
-								};
-								api.subscribe(data).then(res => {
-									console.log('调取subscribe接口成功');
-									if (res.data.code == 200) {
-										that.isshow = res.data.data.isSubscribe;
-										that.isguanzhu = res.data.data.isSubscribe;
-										that.isloadingshow(false);
-									} else {
-										alert('认证失败');
-									}
-								});
-							}
+						  }
 						});
-				});
-			}
-		});
-		//测试使用，正式时删除start
-		/*let data = {
-			latitude: 0,
-			longitude: 0
-		};
-		api.subscribe(data).then(res => {
-			if (res.data.code == 200) {
-				console.log('开始测试环境下调取接口');
-				that.isshow = res.data.data.isSubscribe;
-				that.isguanzhu = res.data.data.isSubscribe;
-				this.isloadingshow(false);
-			} else {
-				alert('认证失败');
-			}
-		});*/
-		//测试使用，正式时删除end
-	},
-	methods: {
+							that.wx.getLocation({
+								type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+								success: function(res) {
+									console.log('获取结束');
+									var latitude = res.latitude; // 纬度，浮点数，范围为90 ~ -90
+									var longitude = res.longitude; // 经度，浮点数，范围为180 ~ -180。
+									var speed = res.speed; // 速度，以米/每秒计
+									var accuracy = res.accuracy; // 位置精度
+									let data = {
+										latitude: latitude || 0,
+										longitude: longitude || 0
+									};
+									api.subscribe(data).then(res => {
+										console.log('调取subscribe接口成功');
+										if (res.data.code == 200) {
+											that.isshow = res.data.data.isSubscribe;
+											that.isguanzhu = res.data.data.isSubscribe;
+											that.isloadingshow(false);
+										} else {
+											alert('认证失败');
+										}
+									});
+								}
+							});
+					});
+				}
+			});
+			//测试使用，正式时删除start
+			/*let data = {
+				latitude: 0,
+				longitude: 0
+			};
+			api.subscribe(data).then(res => {
+				if (res.data.code == 200) {
+					console.log('开始测试环境下调取接口');
+					that.isshow = res.data.data.isSubscribe;
+					that.isguanzhu = res.data.data.isSubscribe;
+					this.isloadingshow(false);
+				} else {
+					alert('认证失败');
+				}
+			});*/
+			//测试使用，正式时删除end
+		},
 		goto(e) {
 			this.$router.push(e);
 		},
@@ -278,7 +307,6 @@ export default {
 .home {
 	width: 750px;
 	height: 100%;
-	background: url(../../static/homepagebg.png) no-repeat;
 	background-size: 100% 100%;
 	position: fixed;
 	.rulebutton {
