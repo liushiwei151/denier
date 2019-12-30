@@ -62,22 +62,16 @@
 		<div v-if="haswhat == 'lookgod'">
 			<div class="Insufficient">
 				<p>恭喜您成功见到财神</p>
-				<div v-if="type==1">
+				<div v-if="type == 1">
 					<p>并收获了一支大吉大利财神签！</p>
 					<p>
 						签号：
 						<span class="textred strong">{{ fuqian }}</span>
 					</p>
 				</div>
-				<div v-if="type==2">
-					<p>并收获了18楼币！</p>
-				</div>
-				<div v-if="type==3">
-					<p>并收获了福袋！</p>
-				</div>
-				<div v-if="type==4">
-					<p>并收获了楼楼周边！</p>
-				</div>
+				<div v-if="type == 2"><p>并收获了18楼币！</p></div>
+				<div v-if="type == 3"><p>并收获了福袋！</p></div>
+				<div v-if="type == 4"><p>并收获了楼楼周边！</p></div>
 				<div class="lookgod"></div>
 				<div class="closegame" @click="close('shua')"><div></div></div>
 			</div>
@@ -90,26 +84,22 @@
 					<div><span>时间</span></div>
 					<div><span>奖励</span></div>
 				</div>
-				<mescroll-vue ref="mescroll"  :up="mescrollUp" @init="mescrollInit">
-				<ul>
-					<li v-for="(item, index) in datalist" :key="index">
-						<div>
-							<span>{{ item.insertTime }}</span>
-						</div>
-						<div>
-							<span>{{ item.prizeName }}{{item.blessingRecordId}}</span>
-						</div>
-					</li>
-					<!-- 虚线充位置 -->
-					<li v-for="(item, index) in datalistlength" :key="index+'1'">
-						<div>
-							<span></span>
-						</div>
-						<div>
-							<span></span>
-						</div>
-					</li>
-				</ul>
+				<mescroll-vue ref="mescroll" :up="mescrollUp" @init="mescrollInit">
+					<ul>
+						<li v-for="(item, index) in datalist" :key="index">
+							<div>
+								<span>{{ item.insertTime }}</span>
+							</div>
+							<div>
+								<span>{{ item.prizeName }}{{ item.blessingRecordId }}</span>
+							</div>
+						</li>
+						<!-- 虚线充位置 -->
+						<li v-for="(item, index) in datalistlength" :key="index + '1'">
+							<div><span></span></div>
+							<div><span></span></div>
+						</li>
+					</ul>
 				</mescroll-vue>
 			</div>
 			<div class="closegame" @click="close"><div></div></div>
@@ -122,7 +112,7 @@
 </template>
 
 <script>
-	import MescrollVue from 'mescroll.js/mescroll.vue';
+import MescrollVue from 'mescroll.js/mescroll.vue';
 export default {
 	name: 'modal',
 	data() {
@@ -135,7 +125,7 @@ export default {
 					num: 0, //当前页 默认0,回调之前会加1; 即callback(page)会从1开始
 					size: 8 //每页数据条数,默认10
 				},
-				htmlNodata: '<p class="upwarp-nodata">-- 没有更多 --</p>',
+				htmlNodata: '<p class="upwarp-nodata">-- 没有更多 --</p>'
 			},
 			dataList: []
 		};
@@ -153,7 +143,7 @@ export default {
 		this.$refs.mescroll && this.$refs.mescroll.beforeRouteLeave();
 		next();
 	},
-	components:{
+	components: {
 		MescrollVue
 	},
 	props: {
@@ -168,21 +158,20 @@ export default {
 		datalist: {
 			default: ''
 		},
-		type:{
-			default:0
+		type: {
+			default: 0
 		},
-		fuqian:{
-			default:null
+		fuqian: {
+			default: null
 		}
 	},
-	computed:{
-		datalistlength(){
-			if(8-this.datalist.length>0){
-				return 8-this.datalist.length
-			}else{
-					return 0
+	computed: {
+		datalistlength() {
+			if (8 - this.datalist.length > 0) {
+				return 8 - this.datalist.length;
+			} else {
+				return 0;
 			}
-			
 		}
 	},
 	methods: {
@@ -190,18 +179,16 @@ export default {
 		mescrollInit(mescroll) {
 			this.mescroll = mescroll; // 如果this.mescroll对象没有使用到,则mescrollInit可以不用配置
 		},
-		downCallback(){
-			
-		},
+		downCallback() {},
 		upCallback(page, mescroll) {
-			this.getrecord(page.num,page.size,this.mescroll);
+			this.getrecord(page.num, page.size, this.mescroll);
 		},
 		// 获取第几页几个
-		getrecord(e,f,g){
-			this.$emit('getrecord',e,f,g)
+		getrecord(e, f, g) {
+			this.$emit('getrecord', e, f, g);
 		},
 		close(m) {
-			this.$emit('closemodal',m);
+			this.$emit('closemodal', m);
 		},
 		//选中男女
 		confirm(e) {
@@ -229,9 +216,9 @@ img {
 	color: rgb(199, 49, 49);
 }
 // mescroll的样式
-.mescroll{
+.mescroll {
 	height: 90%;
-	.mescroll-upwarp{
+	.mescroll-upwarp {
 		padding: 0;
 	}
 }
@@ -358,6 +345,10 @@ img {
 	font-size: 30px;
 	text-align: left;
 	font-family: 'hyc1gj';
+	display: flex;
+	justify-content: center;
+	align-items: flex-start;
+	flex-direction: column;
 }
 
 .Insufficient {
@@ -437,7 +428,7 @@ img {
 			div {
 				width: 50%;
 				overflow: hidden;
-				white-space:nowrap
+				white-space: nowrap;
 			}
 		}
 		li:first-of-type {

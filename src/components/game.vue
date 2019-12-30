@@ -122,6 +122,8 @@ export default {
 			//装备摇摆的判断
 			zbright:true,
 			zblinetime:0,
+			// 只准点一次开始游戏
+			isgame:true,
 		};
 	},
 	inject:['isrouter'],
@@ -351,122 +353,32 @@ export default {
 				}
 			},50)
 		},
-		//绑定长按按钮
-		touch() {
+		//绑定和解绑的函数
+		toucheventstart(){
+			let that =this;
 			let starttime = '';
 			let endtime = '';
-			let that = this;
 			let callgod = document.getElementsByClassName('bottom-land-xian-buttonright')[0];
-			this.iscallgod=true;
-			callgod.addEventListener('touchstart', function() {
-				console.log(that.isclick)
-				if(that.isclick){
-					console.log(that.isclick)
-					starttime = new Date().getTime();
-					that.timer = setTimeout(() => {
-						callgod.classList.add('animated', 'jello');
-						setTimeout(()=>{
-							callgod.classList.remove('animated', 'jello')
-						},1000)
-						clearInterval(that.lasttime);
-						that.leftbutton = 'ReAiming';
-						//开始录音
-						/*测试*/
-						that.star();
-						/*测试*/
-						that.timenum = 3;
-						that.isclick=false;
-						let timealse = setInterval(() => {
-							if (that.timenum > 0) {
-								that.timenum--;
-							} else {
-								clearInterval(timealse);
-								/*测试*/
-								if(that.stopnum){
-									that.stopnum=false;
-									/*测试*/
-									// that.judgetime();
-									that.stop();
-									/*测试*/
-								}
-							}
-						}, 1000);
-						console.log('长按开始');
-					}, 700);
-				}
-				
-			});
-			callgod.addEventListener('touchend', function() {
-				endtime = new Date().getTime();
-				if (endtime - starttime < 700) {
-					clearTimeout(that.timer);
-					console.log('长按结束');
-				} else {
-					//结束录音
-					if(that.timenum>0&&that.timenum<=3){
-						if(that.stopnum){
-							that.stopnum=false;
-							/*测试*/
-							// that.judgetime();
-							that.stop();
-							/*测试*/
-						}
-					}
-					console.log(that.timenum)
-					console.log('结束录音');
-				}
-			});
-		},
-		//解除绑定长按按钮
-		retouch(){
-			this.iscallgod=false;
-			let callgod = document.getElementsByClassName('bottom-land-xian-buttonright')[0];
-			callgod.removeEventListener('touchstart', function() {
-					console.log(that.isclick)
-					if(that.isclick){
-						console.log(that.isclick)
-						starttime = new Date().getTime();
-						that.timer = setTimeout(() => {
-							callgod.classList.add('animated', 'jello');
-							setTimeout(()=>{
-								callgod.classList.remove('animated', 'jello')
-							},1000)
-							clearInterval(that.lasttime);
-							that.leftbutton = 'ReAiming';
-							//开始录音
-							/*测试*/
-							that.star();
-							/*测试*/
-							that.timenum = 3;
-							that.isclick=false;
-							let timealse = setInterval(() => {
-								if (that.timenum > 0) {
-									that.timenum--;
-								} else {
-									clearInterval(timealse);
-									/*测试*/
-									if(that.stopnum){
-										that.stopnum=false;
-										/*测试*/
-										// that.judgetime();
-										that.stop();
-										/*测试*/
-									}
-								}
-							}, 1000);
-							console.log('长按开始');
-						}, 700);
-					}
-					
-				});
-				callgod.removeEventListener('touchend', function() {
-					endtime = new Date().getTime();
-					if (endtime - starttime < 700) {
-						clearTimeout(that.timer);
-						console.log('长按结束');
-					} else {
-						//结束录音
-						if(that.timenum>0&&that.timenum<=3){
+			if(that.isclick){
+				starttime = new Date().getTime();
+				that.timer = setTimeout(() => {
+					callgod.classList.add('animated', 'jello');
+					setTimeout(()=>{
+						callgod.classList.remove('animated', 'jello')
+					},1000)
+					clearInterval(that.lasttime);
+					that.leftbutton = 'ReAiming';
+					//开始录音
+					/*测试*/
+					that.star();
+					/*测试*/
+					that.timenum = 3;
+					that.isclick=false;
+					let timealse = setInterval(() => {
+						if (that.timenum > 0) {
+							that.timenum--;
+						} else {
+							clearInterval(timealse);
 							if(that.stopnum){
 								that.stopnum=false;
 								/*测试*/
@@ -475,10 +387,50 @@ export default {
 								/*测试*/
 							}
 						}
-						console.log(that.timenum)
-						console.log('结束录音');
+					}, 1000);
+					console.log('长按开始');
+				}, 700);
+			}
+			
+		},
+		toucheventend(){
+			let that =this;
+			let starttime = '';
+			let endtime = '';
+			let callgod = document.getElementsByClassName('bottom-land-xian-buttonright')[0];
+			endtime = new Date().getTime();
+			if (endtime - starttime < 700) {
+				clearTimeout(that.timer);
+				console.log('长按结束');
+			} else {
+				//结束录音
+				if(that.timenum>0&&that.timenum<=3){
+					if(that.stopnum){
+						that.stopnum=false;
+						/*测试*/
+						// that.judgetime();
+						that.stop();
+						/*测试*/
 					}
-				});
+				}
+				console.log(that.timenum)
+				console.log('结束录音');
+			}
+		},
+		//绑定长按按钮
+		touch() {
+			let that = this;
+			let callgod = document.getElementsByClassName('bottom-land-xian-buttonright')[0];
+			this.iscallgod=true;
+			callgod.addEventListener('touchstart',this.toucheventstart );
+			callgod.addEventListener('touchend', this.toucheventend);
+		},
+		//解除绑定长按按钮
+		retouch(){
+			this.iscallgod=false;
+			let callgod = document.getElementsByClassName('bottom-land-xian-buttonright')[0];
+			callgod.removeEventListener('touchstart',this.toucheventstart);
+				callgod.removeEventListener('touchend',this.toucheventend);
 		},
 		// 确认瞄准
 		truemz() {
@@ -607,7 +559,6 @@ export default {
 						flag = true;
 					}
 				}
-				console.log(this.degrees);
 				this.pointcont.clearRect(0, 0, this.canvas.width, this.canvas.height);
 				this.drawPoint(degrees);
 				this.Dottedline();
@@ -705,10 +656,11 @@ export default {
 				})
 				this.loadImg();
 				// this.drawPoint();
-			} else if (data == 'startgame') {
+			} else if (data == 'startgame'&&this.isgame==true) {
 				let types ={
 					type:1
 				}
+				this.isgame=false;
 				console.log('还剩'+this.gamenum);
 				if(this.gamenum>0){
 					api.start(types).then((res)=>{

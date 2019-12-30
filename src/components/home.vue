@@ -58,8 +58,10 @@ export default {
 						'onMenuShareAppMessage'
 					] // 必填，需要使用的JS接口列表
 				});
-				console.log('wx获取权限结束');
-				let url = 'https://wx.hhl1916.com/huanghelou1916-center/wx/gCode?name=toYq';
+				//测试
+				let url ='http://qrhhl.yunyutian.cn/huanghelou1916-center/wx/gCode?name=toYq'
+				//正式
+				// let url = 'https://wx.hhl1916.com/huanghelou1916-center/wx/gCode?name=toYq';
 				that.wx.ready(function() {
 					//发送给朋友
 					that.wx.updateAppMessageShareData({
