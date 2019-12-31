@@ -30,7 +30,7 @@ export default {
 			// 初始页面
 			homepage:1,
 			// 分享描述
-			share:'2020财运“码上爆棚”，喊财神赢大礼！',
+			share:'码上发财！圣诞扫码好运来！',
 			//当前时间戳
 			NowTime:0,
 		};
@@ -86,19 +86,19 @@ export default {
 							'stopRecord',
 							'playVoice',
 							'uploadVoice',
-							'updateAppMessageShareData',
-							'updateTimelineShareData',
+							// 'updateAppMessageShareData',
+							// 'updateTimelineShareData',
 							'onMenuShareTimeline',
 							'onMenuShareAppMessage'
 						] // 必填，需要使用的JS接口列表
 					});
 					//测试
-					// let url ='http://qrhhl.yunyutian.cn/huanghelou1916-center/wx/gCode?name=toYq'
+					 // let url ='http://qrhhl.yunyutian.cn/huanghelou1916-center/wx/gCode?name=toYq'
 					//正式
 					let url = 'https://wx.hhl1916.com/huanghelou1916-center/wx/gCode?name=toYq';
 					that.wx.ready(function() {
 						//发送给朋友
-						that.wx.updateAppMessageShareData({
+						/*that.wx.updateAppMessageShareData({
 							title: '共享黄鹤楼，乐度中支年', // 分享标题
 							desc: e, // 分享描述
 							link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
@@ -106,9 +106,9 @@ export default {
 							success: function() {
 								console.log('分享设置成功');
 							}
-						});
+						});*/
 						//分享朋友圈
-						that.wx.updateTimelineShareData({
+						/*that.wx.updateTimelineShareData({
 							title: '共享黄鹤楼，乐度中支年', // 分享标题
 							link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
 							imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
@@ -116,8 +116,7 @@ export default {
 								// 设置成功
 								console.log('分享朋友圈设置成功');
 							}
-						});
-						console.log('开始获取坐标接口');
+						});*/
 						// 分享朋友圈回调
 						that.wx.onMenuShareTimeline({
 							title: '共享黄鹤楼，乐度中支年', // 分享标题
@@ -128,7 +127,9 @@ export default {
 								api.share().then((res)=>{
 									if(res.data.code==200){
 										that.$layer.msg('分享成功');
-										window.location.reload()
+										setTimeout(()=>{
+											window.location.reload();
+										},700);
 									}else{
 										that.$layer.msg('分享失败')
 									}
@@ -150,7 +151,9 @@ export default {
 							api.share().then((res)=>{
 								if(res.data.code==200){
 									that.$layer.msg('分享成功');
-									window.location.reload();
+									setTimeout(()=>{
+										window.location.reload();
+									},700);
 								}else{
 									that.$layer.msg('分享失败')
 								}

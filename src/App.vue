@@ -6,72 +6,81 @@
 </template>
 
 <script>
-	import api from '@/getapi.js';
+import api from '@/getapi.js';
 export default {
 	name: 'App',
 	provide() {
 		return {
 			isloadingshow: this.isloadingshow,
-			isrouter:this.isrouter
+			isrouter: this.isrouter
 		};
 	},
 	data() {
 		return {
 			isshow: false,
-			isrouters:true,
-			share:''
+			isrouters: true,
+			share: '码上发财！圣诞扫码好运来！'
 		};
 	},
 	created() {
-		if(this.$route.path!='/'){
+		if (this.$route.path != '/') {
 			this.isloadingshow(true);
-			api.getCurTime().then((res)=>{
-				if(res.data.code===200){
-					let NowTime=res.data.data;
-					if(NowTime>=1579190400000){//当前时间大于1-17
-						this.share='小年财运旺，扫码幸运翻倍！';
-					}else if(NowTime>=1579795200000){//1-24
-						this.share='新春财运当头，扫码赢财神宝盒！';
-					}else if(NowTime>=1580572800000){//2-2
-						this.share='佳节码上有好礼，扫码财运滚滚来！';
+			api.getCurTime()
+				.then(res => {
+					if (res.data.code === 200) {
+						let NowTime = res.data.data;
+						if (this.NowTime >= 1577808000000 && this.NowTime < 1579190400000) {
+							this.share = '2020财运“码上爆棚”，喊财神赢大礼！';
+						} else if (this.NowTime >= 1579190400000 && this.NowTime < 1579795200000) {
+							//当前时间大于1-17
+							this.share = '小年财运旺，扫码幸运翻倍！';
+						} else if (this.NowTime >= 1579795200000 && this.NowTime < 1580572800000) {
+							//1-24
+							this.share = '新春财运当头，扫码赢财神宝盒！';
+						} else if (this.NowTime >= 1580572800000) {
+							//2-2
+							this.share = '佳节码上有好礼，扫码财运滚滚来！';
+						}
+						this.getwx();
+					} else {
+						this.$layer.msg('获取当前时间失败,请刷新重试');
 					}
-					this.getwx();
-				}else{
+				})
+				.catch(err => {
 					this.$layer.msg('获取当前时间失败,请刷新重试');
-				}
-			}).catch((err)=>{
-				this.$layer.msg('获取当前时间失败,请刷新重试');
-			})
+				});
 		}
 	},
 	methods: {
 		//开关路由刷新
-		isrouter(){
-			this.isrouters= false;
-			this.$nextTick(function(){
-			  this.isrouters=true
-			})
+		isrouter() {
+			this.isrouters = false;
+			this.$nextTick(function() {
+				this.isrouters = true;
+			});
 		},
 		// 获取微信权限
 		getwx() {
-			let that =this;
+			let that = this;
 			if (localStorage.getItem('jsSign')) {
-				let jsSign =JSON.parse(localStorage.getItem('jsSign'));
+				let jsSign = JSON.parse(localStorage.getItem('jsSign'));
 				this.wxsdk(jsSign);
 			} else {
 				let datas = {
 					url: location.href.split('#')[0]
 				};
-				api.jsSign(datas).then(res => {
-					if (res.data.code == 200) {
-						localStorage.setItem('jsSign',JSON.stringify(res.data.data));
-						that.wxsdk(res.data.data)
-					}else{
-						that.$layer.msg('获取权限失败')
-					}
-				}).catch((err)=>{
-					that.$layer.msg('获取权限失败')
-				})
+				api.jsSign(datas)
+					.then(res => {
+						if (res.data.code == 200) {
+							localStorage.setItem('jsSign', JSON.stringify(res.data.data));
+							that.wxsdk(res.data.data);
+						} else {
+							that.$layer.msg('获取权限失败');
+						}
+					})
+					.catch(err => {
+						that.$layer.msg('获取权限失败');
+					});
 			}
 		},
 		wxsdk(e) {
@@ -88,8 +97,8 @@ export default {
 					'stopRecord',
 					'playVoice',
 					'uploadVoice',
-					'updateAppMessageShareData',
-					'updateTimelineShareData',
+					// 'updateAppMessageShareData',
+					// 'updateTimelineShareData',
 					'onMenuShareTimeline',
 					'onMenuShareAppMessage'
 				] // 必填，需要使用的JS接口列表
@@ -98,10 +107,10 @@ export default {
 			//正式
 			let url = 'https://wx.hhl1916.com/huanghelou1916-center/wx/gCode?name=toYq';
 			//测试
-			// let url ='http://qrhhl.yunyutian.cn/huanghelou1916-center/wx/gCode?name=toYq';
+			// let url = 'http://qrhhl.yunyutian.cn/huanghelou1916-center/wx/gCode?name=toYq';
 			that.wx.ready(function() {
 				//发送给朋友
-				that.wx.updateAppMessageShareData({
+				/*that.wx.updateAppMessageShareData({
 					title: '共享黄鹤楼，乐度中支年', // 分享标题
 					desc: that.share, // 分享描述
 					link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
@@ -109,9 +118,9 @@ export default {
 					success: function() {
 						console.log('分享设置成功');
 					}
-				});
+				});*/
 				//分享朋友圈
-				that.wx.updateTimelineShareData({
+				/*that.wx.updateTimelineShareData({
 					title: '共享黄鹤楼，乐度中支年', // 分享标题
 					link: url, // 分享链接，该链接域名或路径必须与当前页面对应的公众号JS安全域名一致
 					imgUrl: 'https://pic.cwyyt.cn/upload/img/20191220/1337253725_fenxiang.jpg', // 分享图标
@@ -120,7 +129,7 @@ export default {
 						console.log('分享朋友圈设置成功');
 					}
 				});
-				console.log('开始获取坐标接口');
+				console.log('开始获取坐标接口');*/
 				// 分享朋友圈回调
 				that.wx.onMenuShareTimeline({
 					title: '共享黄鹤楼，乐度中支年', // 分享标题
@@ -132,6 +141,9 @@ export default {
 							.then(res => {
 								if (res.data.code == 200) {
 									that.$layer.msg('分享成功');
+									setTimeout(() => {
+										window.location.reload();
+									}, 700);
 								} else {
 									that.$layer.msg('分享失败');
 								}
@@ -155,6 +167,9 @@ export default {
 							.then(res => {
 								if (res.data.code == 200) {
 									that.$layer.msg('分享成功');
+									setTimeout(() => {
+										window.location.reload();
+									}, 700);
 								} else {
 									that.$layer.msg('分享失败');
 								}
