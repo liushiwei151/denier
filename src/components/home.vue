@@ -5,7 +5,7 @@
 			<div class="money">
 				<div class="MoneyGod" @click="!isguanzhu ? (isshow = false) : goto('MoneyGod')"><div class="cursor"></div></div>
 				<div class="Fortunes" @click="!isguanzhu ? (isshow = false) : goto('Fortunes')"></div>
-				<div class="callMoney" @click="!isguanzhu ? (isshow = false) : goto('game')"></div>
+				<div class="callMoney" @click="onlygoto"></div>
 			</div>
 		</div>
 		<div class="modal" :class="{ show: !isshow }">
@@ -28,24 +28,29 @@ export default {
 			//是否关注了
 			isguanzhu: '',
 			// 初始页面
-			homepage:2,
+			homepage:1,
 			// 分享描述
-			share:'2020财运“码上爆棚”，喊财神赢大礼！'
+			share:'2020财运“码上爆棚”，喊财神赢大礼！',
+			//当前时间戳
+			NowTime:0,
 		};
 	},
 	inject: ['isloadingshow'],
 	created() {
+		this.isloadingshow(true);
 		api.getCurTime().then((res)=>{
 			if(res.data.code===200){
-				console.log(res.data.data);
-				let NowTime=res.data.data;
-				if(NowTime>=1579190400000){//当前时间大于1-17
+				this.NowTime=res.data.data;
+				if(this.NowTime>=1577808000000&&this.NowTime<1579190400000){
+					this.homepage=2;
+					this.share='2020财运“码上爆棚”，喊财神赢大礼！';
+				}else if(this.NowTime>=1579190400000&&this.NowTime<1579795200000){//当前时间大于1-17
 					this.homepage=3;
 					this.share='小年财运旺，扫码幸运翻倍！';
-				}else if(NowTime>=1579795200000){//1-24
+				}else if(this.NowTime>=1579795200000&&this.NowTime<1580572800000){//1-24
 					this.homepage=4;
 					this.share='新春财运当头，扫码赢财神宝盒！';
-				}else if(NowTime>=1580572800000){//2-2
+				}else if(this.NowTime>=1580572800000){//2-2
 					this.homepage=5;
 					this.share='佳节码上有好礼，扫码财运滚滚来！';
 				}
@@ -62,7 +67,6 @@ export default {
 	},
 	methods: {
 		getwx(e){
-			this.isloadingshow(true);
 			let that = this;
 			let datas = {
 				url: location.href.split('#')[0]
@@ -89,9 +93,9 @@ export default {
 						] // 必填，需要使用的JS接口列表
 					});
 					//测试
-					let url ='http://qrhhl.yunyutian.cn/huanghelou1916-center/wx/gCode?name=toYq'
+					// let url ='http://qrhhl.yunyutian.cn/huanghelou1916-center/wx/gCode?name=toYq'
 					//正式
-					// let url = 'https://wx.hhl1916.com/huanghelou1916-center/wx/gCode?name=toYq';
+					let url = 'https://wx.hhl1916.com/huanghelou1916-center/wx/gCode?name=toYq';
 					that.wx.ready(function() {
 						//发送给朋友
 						that.wx.updateAppMessageShareData({
@@ -206,11 +210,20 @@ export default {
 			this.isshow = true;
 		},
 		onlygoto() {
+			if(this.NowTime>=1577808000000){
+				if(!this.isguanzhu){
+					this.isshow=false;
+				}else{
+					this.$router.push('game');
+				}
+			}else{
+				this.$layer.msg('活动时间为1月1日- 2月9日，敬请期待');
+			}
 			//正式
 			// this.$layer.msg('活动时间为1月1日- 2月9日，敬请期待');
 			console.log('正式');
 			//测试
-			this.$router.push('game');
+			
 		}
 	}
 };

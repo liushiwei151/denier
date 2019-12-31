@@ -384,7 +384,6 @@ export default {
 						} else {
 							clearInterval(timealse);
 							if(that.stopnum){
-								that.stopnum=false;
 								/*测试*/
 								// that.judgetime();
 								that.stop();
@@ -410,15 +409,12 @@ export default {
 				//结束录音
 				if(that.timenum>=0&&that.timenum<=3){
 					if(that.stopnum){
-						that.stopnum=false;
 						/*测试*/
 						// that.judgetime();
 						that.stop();
 						/*测试*/
 					}
 				}
-				console.log(that.timenum)
-				console.log('结束录音');
 			}
 		},
 		//绑定长按按钮
@@ -449,8 +445,6 @@ export default {
 			} else {
 				return;
 			}
-
-			console.log('度数' + this.degrees);
 		},
 		// 画布循环内容
 		allcanvas() {
@@ -638,7 +632,6 @@ export default {
 		},
 		//替换模态框
 		chosemodal(e){
-			console.log(e)
 			this.haswh=e;
 		},
 		//确认选择男女
@@ -716,7 +709,9 @@ export default {
 		},
 		// 停止录音
 		stop() {
+				console.log('结束录音');
 				let that = this;
+				that.stopnum=false;
 				this.wx.stopRecord({
 					success: function(res) {
 						that.localId = res;
