@@ -25,23 +25,29 @@ export default {
 	created() {
 		if (this.$route.path != '/') {
 			this.isloadingshow(true);
+			console.log('开始请求时间戳')
 			api.getCurTime()
 				.then(res => {
 					if (res.data.code === 200) {
 						let NowTime = res.data.data;
+						console.log('请求时间戳'+this.NowTime)
 						if (this.NowTime >= 1577808000000 && this.NowTime < 1579190400000) {
 							this.share = '2020财运“码上爆棚”，喊财神赢大礼！';
+							this.getwx();
 						} else if (this.NowTime >= 1579190400000 && this.NowTime < 1579795200000) {
 							//当前时间大于1-17
 							this.share = '小年财运旺，扫码幸运翻倍！';
+							this.getwx();
 						} else if (this.NowTime >= 1579795200000 && this.NowTime < 1580572800000) {
 							//1-24
 							this.share = '新春财运当头，扫码赢财神宝盒！';
+							this.getwx();
 						} else if (this.NowTime >= 1580572800000) {
 							//2-2
 							this.share = '佳节码上有好礼，扫码财运滚滚来！';
+							this.getwx();
 						}
-						this.getwx();
+						
 					} else {
 						this.$layer.msg('获取当前时间失败,请刷新重试');
 					}
@@ -61,6 +67,7 @@ export default {
 		},
 		// 获取微信权限
 		getwx() {
+			console.log('开始判断是否存储wx缓存数据')
 			let that = this;
 			if (localStorage.getItem('jsSign')) {
 				let jsSign = JSON.parse(localStorage.getItem('jsSign'));
@@ -72,19 +79,21 @@ export default {
 				api.jsSign(datas)
 					.then(res => {
 						if (res.data.code == 200) {
+							console.log('获取权限成功')
 							localStorage.setItem('jsSign', JSON.stringify(res.data.data));
 							that.wxsdk(res.data.data);
 						} else {
-							that.$layer.msg('获取权限失败');
+							that.$layer.msg('get权限数据失败');
 						}
 					})
 					.catch(err => {
-						that.$layer.msg('获取权限失败');
+						that.$layer.msg('get权限数据失败');
 					});
 			}
 		},
 		wxsdk(e) {
 			let that = this;
+			console.log('开始获取wx权限')
 			that.wx.config({
 				debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
 				appId: e.appid, // 必填，公众号的唯一标识
@@ -109,6 +118,7 @@ export default {
 			//测试
 			// let url = 'http://qrhhl.yunyutian.cn/huanghelou1916-center/wx/gCode?name=toYq';
 			that.wx.ready(function() {
+				console.log('开始wxready')
 				//发送给朋友
 				/*that.wx.updateAppMessageShareData({
 					title: '共享黄鹤楼，乐度中支年', // 分享标题

@@ -404,7 +404,6 @@ export default {
 			endtime = new Date().getTime();
 			if (endtime - starttime < 700) {
 				clearTimeout(that.timer);
-				console.log('长按结束');
 			} else {
 				//结束录音
 				if(that.timenum>=0&&that.timenum<=3){
@@ -416,6 +415,7 @@ export default {
 					}
 				}
 			}
+			console.log('长按结束');
 		},
 		//绑定长按按钮
 		touch() {
@@ -693,6 +693,7 @@ export default {
 		},
 		//在进入页面时录一段音已确定用户有无录音权限
 		openweb(){
+			console.log('进入页面获取授权')
 			this.wx.startRecord();
 			setTimeout(()=>{
 				this.wx.stopRecord({
@@ -705,6 +706,7 @@ export default {
 		},
 		// 开始录音
 		star() {
+			console.log('开始录音')
 			this.wx.startRecord();
 		},
 		// 停止录音
