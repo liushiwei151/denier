@@ -1,7 +1,7 @@
 <template>
 	<div class="box">
 		<div class="Fortunes">
-			<div class="Fortunes-text" ><span v-show="!istop">本次活动您已有过中奖纪录，不能参与后续竞奖，敬请谅解哦！</span></div>
+			<div class="Fortunes-text" ><span v-show="istop">本次活动您已有过中奖纪录，不能参与后续竞奖，敬请谅解哦！</span></div>
 			<div class="Fortunes-topbox">
 				<div class="Fortunes-title">
 					<p>昵称：{{fortun.nickName}}</p>
@@ -15,17 +15,19 @@
 						</span>
 						<span>
 							排名：
-							<span class="juh">{{fortun.stripRank}}</span>
+							<span class="juh" v-show="!istop">{{fortun.stripRank}}</span>
+							<span v-show="istop">0</span>
 						</span>
 					</p>
 					<p>
 						<span>
 							盒包财运积分：
-							<span class="juh">{{fortun.boxScore}}</span>
+							<span class="juh" >{{fortun.boxScore}}</span>
 						</span>
 						<span>
 							排名：
-							<span class="juh">{{fortun.boxRank}}</span>
+							<span class="juh" v-show="!istop">{{fortun.boxRank}}</span>
+							<span v-show="istop">0</span>
 						</span>
 					</p>
 					<div class="Fortunes-topbox-p">
@@ -99,7 +101,11 @@ export default {
 		api.fortuneList().then((res)=>{
 			if(res.data.code==200){
 				that.fortun=res.data.data;
-				that.istop=res.data.data.isTop;
+				if(res.data.data.isTop==1){
+					that.istop=true;
+				}else if(res.data.data.isTop==-1){
+					that.istop=false
+				}
 				this.isloadingshow(false);
 			}
 		})
