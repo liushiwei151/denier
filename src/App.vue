@@ -70,10 +70,10 @@ export default {
 		getwx() {
 			console.log('开始判断是否存储wx缓存数据')
 			let that = this;
-			if (localStorage.getItem('jsSign')) {
+			/*if (localStorage.getItem('jsSign')) {
 				let jsSign = JSON.parse(localStorage.getItem('jsSign'));
 				this.wxsdk(jsSign);
-			} else {
+			} else {*/
 				let datas = {
 					url: location.href.split('#')[0]
 				};
@@ -81,7 +81,6 @@ export default {
 					.then(res => {
 						if (res.data.code == 200) {
 							console.log('获取权限成功'+res.data.data)
-							localStorage.setItem('jsSign', JSON.stringify(res.data.data));
 							that.wxsdk(res.data.data);
 						} else {
 							that.$layer.msg('get权限数据失败');
@@ -90,7 +89,6 @@ export default {
 					.catch(err => {
 						that.$layer.msg('get权限数据失败');
 					});
-			}
 		},
 		wxsdk(e) {
 			let that = this;
