@@ -19,7 +19,8 @@ export default {
 		return {
 			isshow: false,
 			isrouters: true,
-			share: '码上发财！圣诞扫码好运来！'
+			share: '码上发财！圣诞扫码好运来！',
+			NowTime:0
 		};
 	},
 	created() {
@@ -29,7 +30,7 @@ export default {
 			api.getCurTime()
 				.then(res => {
 					if (res.data.code === 200) {
-						let NowTime = res.data.data;
+						this.NowTime = res.data.data;
 						console.log('请求时间戳'+this.NowTime)
 						if (this.NowTime >= 1577808000000 && this.NowTime < 1579190400000) {
 							this.share = '2020财运“码上爆棚”，喊财神赢大礼！';
@@ -79,7 +80,7 @@ export default {
 				api.jsSign(datas)
 					.then(res => {
 						if (res.data.code == 200) {
-							console.log('获取权限成功')
+							console.log('获取权限成功'+res.data.data)
 							localStorage.setItem('jsSign', JSON.stringify(res.data.data));
 							that.wxsdk(res.data.data);
 						} else {
