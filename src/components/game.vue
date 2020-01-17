@@ -689,6 +689,7 @@ export default {
 									console.log('停止');
 								}
 							}, 1000);
+							this.openweb();
 						}else{
 							this.$layer.msg('开始游戏错误，请刷新重试')
 						}
