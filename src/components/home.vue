@@ -206,26 +206,25 @@ export default {
 			//测试使用，正式时删除end
 		},
 		goto(e) {
-			this.$router.push(e);
+			if(this.NowTime<=1581264000000){
+				this.$router.push(e);
+			}else{
+				this.$layer.msg('活动已结束');
+			}
 		},
 		close() {
 			this.isshow = true;
 		},
 		onlygoto() {
-			if(this.NowTime>=1577808000000){
+			if(this.NowTime<=1581264000000){
 				if(!this.isguanzhu){
 					this.isshow=false;
 				}else{
 					this.$router.push('game');
 				}
 			}else{
-				this.$layer.msg('活动时间为1月1日- 2月9日，敬请期待');
+				this.$layer.msg('活动已结束');
 			}
-			//正式
-			// this.$layer.msg('活动时间为1月1日- 2月9日，敬请期待');
-			console.log('正式');
-			//测试
-			
 		}
 	}
 };
