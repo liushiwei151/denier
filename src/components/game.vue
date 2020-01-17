@@ -126,6 +126,7 @@ export default {
 			isgame:true,
 			//后台需要的值
 			gameRecordId:'',
+			openid:null,
 		};
 	},
 	inject:['isrouter'],
@@ -435,6 +436,13 @@ export default {
 		// 确认瞄准
 		truemz() {
 			if (this.leftbutton == 'ConfirmAiming') {
+				let data={
+					openid:this.openid,
+					type:15
+				}
+				api.uStatistics(data).then((res)=>{
+					console.log("记录点击")
+				})
 				this.leftbutton = 'ReAiming';
 				this.touch();
 				clearInterval(this.movep);
@@ -662,6 +670,7 @@ export default {
 					api.start(types).then((res)=>{
 						if(res.data.code==200){
 							this.gameRecordId=res.data.data.gameRecordId;
+							this.openid=res.data.data.user.openid;
 							this.isstartgame=true;
 							this.closemodal();
 							this.movepoint();

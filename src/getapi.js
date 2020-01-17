@@ -76,6 +76,13 @@ const getPrizes=()=>{
 const getCurTime=()=>{
 	return axios.get('/yq/getCurTime')
 }
+//记录次数
+const uStatistics =(data)=>{
+	// 测试
+	// return axios.post('http://qrhhl.yunyutian.cn/huanghelou1916-center/open/uStatistics',data)
+	//正式
+    return axios.post('https://wx.hhl1916.com/huanghelou1916-center/open/uStatistics',data)
+}
 export default {
 	subscribe,
 	fortuneSign,
@@ -88,5 +95,6 @@ export default {
 	record,
 	share,
 	getPrizes,
-	getCurTime
+	getCurTime,
+	uStatistics
 }
