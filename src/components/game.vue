@@ -127,6 +127,7 @@ export default {
 			//后台需要的值
 			gameRecordId:'',
 			openid:null,
+			token:null,
 		};
 	},
 	inject:['isrouter'],
@@ -340,7 +341,10 @@ export default {
 						}else{
 							clearInterval(movelast);
 							this.showmodal('wait');
-							api.getPrizes().then((res)=>{
+							let data={
+								token:this.token
+							}
+							api.getPrizes(data).then((res)=>{
 								if(res.data.code==200){
 									this.showmodal('lookgod',res.data.data.type);
 									if(res.data.data.type==1){
@@ -671,6 +675,7 @@ export default {
 						if(res.data.code==200){
 							this.gameRecordId=res.data.data.gameRecordId;
 							this.openid=res.data.data.user.openid;
+							this.token=res.data.data.token;
 							this.isstartgame=true;
 							this.closemodal();
 							this.movepoint();

@@ -69,8 +69,8 @@ const share =()=>{
 	return axios.post('/yq/shout/share')
 }
 //奖品的接口
-const getPrizes=()=>{
-	return axios.post('/yq/shout/getPrizes')
+const getPrizes=(data)=>{
+	return axios.post('/yq/shout/getPrizes',data)
 }
 //当前时间戳
 const getCurTime=()=>{
